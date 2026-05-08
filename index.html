@@ -58,13 +58,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .btn-login:hover{opacity:.9;}
 .btn-login:disabled{opacity:.5;cursor:not-allowed;}
 .lerr{background:var(--redg);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;margin-bottom:1rem;display:none;}
+.debug-console{background:#1a1d2e;border:1px solid #334155;border-radius:8px;padding:10px;margin-top:15px;font-family:monospace;font-size:11px;color:#a78bfa;max-height:150px;overflow-y:auto;display:none;}
+.debug-console .log-line{padding:3px 0;border-bottom:1px solid #334155;font-family:monospace;}
 @media(max-width:600px){.lw{grid-template-columns:1fr;}.ll{display:none;}}
 
 /* Dashboard */
 #dashboard-screen{display:none;}
 .shell{display:flex;min-height:100vh;}
-
-/* Sidebar */
 .sb{width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
 .sb-top{padding:1.25rem 1.25rem .875rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
 .sb-lb{width:34px;height:34px;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -90,37 +90,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sbb:hover{background:var(--bg3);color:var(--text);}
 .sbb-out{border-color:rgba(239,68,68,.25);background:var(--redg);color:var(--red);}
 .sbb-out:hover{background:rgba(239,68,68,.2);}
-
-/* Main */
 .main{margin-left:240px;flex:1;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:var(--bg2);}
 .topbar-left{display:flex;align-items:center;gap:1rem;}
 .topbar-title{font-size:18px;font-weight:700;color:var(--text);}
-.topbar-date{font-size:12px;color:var(--text3);background:var(--bg3);padding:5px 12px;border-radius:99px;border:1px solid var(--border2);}
+.topbar-date{font-size:12px;color:var(--text3);background:var(--bg3);padding:5px 12px;border-radius:99px;}
 .topbar-right{display:flex;align-items:center;gap:10px;}
 .topbar-time{font-size:12px;color:var(--text3);}
 .th-wrap{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:99px;padding:4px 10px;cursor:pointer;}
-.th-wrap svg{opacity:.6;}
-.th-toggle{width:32px;height:18px;background:var(--blue);border-radius:99px;position:relative;transition:background .2s;}
+.th-toggle{width:32px;height:18px;background:var(--blue);border-radius:99px;position:relative;}
 .th-thumb{width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;}
 [data-theme="light"] .th-thumb{left:17px;}
-[data-theme="light"] .th-toggle{background:#e4e8f5;}
-[data-theme="light"] .th-toggle .th-thumb{background:var(--blue2);}
-.btn-upd{display:flex;align-items:center;gap:7px;padding:7px 16px;background:var(--blueg);border:1px solid rgba(79,110,247,.3);border-radius:8px;color:var(--blue);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);}
+.btn-upd{display:flex;align-items:center;gap:7px;padding:7px 16px;background:var(--blueg);border:1px solid rgba(79,110,247,.3);border-radius:8px;color:var(--blue);font-size:13px;font-weight:500;cursor:pointer;}
 .btn-upd:hover{background:rgba(79,110,247,.2);}
-.btn-upd:disabled{opacity:.5;cursor:not-allowed;}
 .cnt{padding:1.5rem 2rem 3rem;}
 .err-b{background:var(--redg);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:10px 16px;color:#f87171;font-size:13px;margin-bottom:1.25rem;display:none;}
-.success-b{background:var(--greeng);border:1px solid rgba(14,164,114,.25);border-radius:10px;padding:10px 16px;color:#0ea472;font-size:13px;margin-bottom:1.25rem;display:none;}
-
-/* Content Panels */
 .panel{display:none;}
 .panel.active{display:block;}
-
-/* Cards */
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.5rem;}
 .mc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;position:relative;overflow:hidden;}
-.mc:hover{transform:translateY(-2px);box-shadow:0 10px 28px var(--sh);}
 .mc-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.875rem;}
 .mc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
 .mc-val{font-size:26px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px;}
@@ -130,58 +118,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .ip{background:var(--purpleg);}
 .ir{background:var(--redg);}
 .ig{background:var(--greeng);}
-
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
-.g31{display:grid;grid-template-columns:1.6fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;}
 .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
 .ct{font-size:13px;font-weight:600;color:var(--text);}
 .cb{font-size:11px;padding:3px 9px;border-radius:99px;background:var(--blueg);color:var(--blue);font-weight:500;}
-.cw{position:relative;width:100%;}
+.cw{position:relative;width:100%;height:200px;}
 .leg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;}
 .li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
-.ls{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-
-/* Products Grid */
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
-.product-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:15px;cursor:pointer;transition:all .2s;text-align:center;}
-.product-card:hover{transform:translateY(-3px);border-color:var(--blue);background:var(--blueg);}
-.product-card h4{font-size:14px;margin-bottom:8px;}
-.product-count{font-size:28px;font-weight:700;color:var(--blue);}
-.product-percent{font-size:11px;color:var(--text3);margin-top:5px;}
-.product-detail-panel{margin-top:20px;padding:20px;background:var(--bg3);border-radius:12px;display:none;}
-.product-detail-panel.show{display:block;}
-
-/* Tables */
-.tbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;}
-.srch{position:relative;}
-.srch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.4;}
-.srch input{padding:8px 12px 8px 32px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;width:210px;}
-.tw{overflow-x:auto;}
+.ls{width:8px;height:8px;border-radius:2px;}
 table{width:100%;border-collapse:collapse;}
-thead th{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
-tbody tr:hover{background:var(--bg3);}
-tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
-.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;}
+thead th{font-size:11px;font-weight:600;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);}
+.pill{display:inline-flex;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;}
 .pb{background:var(--blueg);color:var(--blue);}
 .pp{background:var(--purpleg);color:var(--purple);}
 .pg{background:var(--greeng);color:var(--green);}
 .pr{background:var(--redg);color:var(--red);}
 .pz{background:var(--bg3);color:var(--text2);}
-.empty{text-align:center;color:var(--text3);font-size:13px;padding:2.5rem;}
-
-/* Settings */
-.settings-form{max-width:500px;}
-.settings-group{margin-bottom:20px;}
-.settings-group label{display:block;margin-bottom:8px;font-weight:500;}
-.settings-group input{width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);}
-.btn-primary{background:var(--blue);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
-.btn-danger{background:var(--red);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
-.divider{margin:20px 0;border-top:1px solid var(--border);}
-
-@media(max-width:1150px){.mgrid{grid-template-columns:repeat(2,1fr);}.g31{grid-template-columns:1fr;}}
-@media(max-width:900px){.g2{grid-template-columns:1fr;}}
-@media(max-width:768px){.sb{display:none;}.main{margin-left:0;}.cnt{padding:1rem;}}
+.empty{text-align:center;color:var(--text3);padding:2.5rem;}
+@media(max-width:768px){.sb{display:none;}.main{margin-left:0;}.mgrid{grid-template-columns:1fr 1fr;}.g2{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -196,16 +152,20 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
       </div>
       <div class="ll-body">
         <div class="ll-h">IA Automação<br>em tempo real</div>
-        <div class="ll-s">Visualize os dados coletados via IA no WhatsApp e Instagram com análises interativas.</div>
+        <div class="ll-s">Visualize os dados coletados via IA no WhatsApp e Instagram.</div>
       </div>
     </div>
     <div class="lr">
       <div class="lr-h">Bem-vindo de volta</div>
       <div class="lr-s">Acesse sua conta para continuar</div>
       <div class="lerr" id="lerr"></div>
-      <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="le" placeholder="seu@email.com"/></div>
-      <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lp" placeholder="••••••••"/></div>
-      <button class="btn-login" onclick="doLogin()">Entrar no Sistema</button>
+      <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="le" placeholder="seu@email.com" value="admin@example.com"/></div>
+      <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lp" placeholder="••••••••" value="123456"/></div>
+      <button class="btn-login" id="login-btn" onclick="doLogin()">Entrar no Sistema</button>
+      <div class="debug-console" id="debug-console">
+        <div style="color:#10b981;margin-bottom:5px;">📋 Console de Debug:</div>
+        <div id="debug-logs"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -213,8 +173,6 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
 <!-- DASHBOARD -->
 <div id="dashboard-screen">
 <div class="shell">
-
-<!-- SIDEBAR -->
 <aside class="sb">
   <div class="sb-top">
     <div class="sb-lb"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
@@ -222,26 +180,14 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
   </div>
   <nav class="sb-nav">
     <div class="sb-gl">Menu Principal</div>
-    <a class="sb-a active" data-panel="analytics" href="#">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Analytics
-    </a>
-    <a class="sb-a" data-panel="produtos" href="#">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Produtos
-    </a>
+    <a class="sb-a active" data-panel="analytics" href="#"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Analytics</a>
+    <a class="sb-a" data-panel="produtos" href="#"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Produtos</a>
     <div class="sb-gl">Leads</div>
-    <a class="sb-a" data-panel="leads-wpp" href="#">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp
-    </a>
-    <a class="sb-a" data-panel="leads-ig" href="#">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>Instagram
-    </a>
+    <a class="sb-a" data-panel="leads-wpp" href="#"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</a>
+    <a class="sb-a" data-panel="leads-ig" href="#"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>Instagram</a>
     <div class="sb-gl">Sistema</div>
-    <a class="sb-a" data-panel="bloqueios" href="#">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Bloqueios
-    </a>
-    <a class="sb-a" data-panel="config" href="#">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configurações
-    </a>
+    <a class="sb-a" data-panel="bloqueios" href="#"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Bloqueios</a>
+    <a class="sb-a" data-panel="config" href="#"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configurações</a>
   </nav>
   <div class="sb-bot">
     <div class="sb-st"><span class="sb-dot"></span>Sistema ativo — WPP v12.3 · IG v6</div>
@@ -250,46 +196,50 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
       <div><div class="sb-un" id="sb-nm">Usuário</div><div class="sb-ue" id="sb-em">—</div></div>
     </div>
     <div class="sb-btns">
-      <button class="sbb" onclick="toggleTheme()">
-        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <span id="th-lb">Claro</span>
-      </button>
-      <button class="sbb sbb-out" onclick="doLogout()">
-        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-        Sair
-      </button>
+      <button class="sbb" onclick="toggleTheme()"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span id="th-lb">Claro</span></button>
+      <button class="sbb sbb-out" onclick="doLogout()"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sair</button>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-title" id="page-title">Analytics</div>
-      <span class="topbar-date" id="date-range">—</span>
-    </div>
-    <div class="topbar-right">
-      <span class="topbar-time" id="last-upd">—</span>
-      <div class="th-wrap" onclick="toggleTheme()">
-        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <div class="th-toggle"><div class="th-thumb"></div></div>
-        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      </div>
-      <button class="btn-upd" onclick="loadAll()">
-        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        Atualizar
-      </button>
-    </div>
+    <div class="topbar-left"><div class="topbar-title" id="page-title">Analytics</div><span class="topbar-date" id="date-range">—</span></div>
+    <div class="topbar-right"><span class="topbar-time" id="last-upd">—</span><button class="btn-upd" onclick="loadAll()">🔄 Atualizar</button></div>
   </div>
-
   <div class="cnt">
     <div class="err-b" id="err"></div>
-    <div class="success-b" id="success"></div>
-
-    <!-- PANEL: ANALYTICS -->
+    
+    <!-- PANEL ANALYTICS -->
     <div id="panel-analytics" class="panel active">
       <div class="mgrid">
         <div class="mc"><div class="mc-row"><div><div class="mc-lbl">Conversas WhatsApp</div></div><div class="mc-icon ib"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div></div><div class="mc-val" id="m-wpp">—</div><div style="font-size:11px;color:var(--green);margin-top:4px">total registradas</div><canvas id="mc-wpp" height="50" style="margin-top:8px;width:100%"></canvas><div class="mc-bar" style="background:linear-gradient(90deg,#1d4ed8,#4f6ef7)"></div></div>
         <div class="mc"><div class="mc-row"><div><div class="mc-lbl">Conversas Instagram</div></div><div class="mc-icon ip"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--purple)" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div></div><div class="mc-val" id="m-ig">—</div><div style="font-size:11px;color:var(--green);margin-top:4px">total registradas</div><canvas id="mc-ig" height="50" style="margin-top:8px;width:100%"></canvas><div class="mc-bar" style="background:linear-gradient(90deg,#7c3aed,#8b5cf6)"></div></div>
-        <div class="
+        <div class="mc"><div class="mc-row"><div><div class="mc-lbl">Bloqueios humanos</div></div><div class="mc-icon ir"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--red)" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div></div><div class="mc-val" id="m-bloq">—</div><div style="font-size:11px;color:var(--text3);margin-top:4px">intervenções manuais</div><div class="mc-bar" style="background:linear-gradient(90deg,#dc2626,#ef4444)"></div></div>
+        <div class="mc"><div class="mc-row"><div><div class="mc-lbl">Ativas últimas 24h</div></div><div class="mc-icon ig"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--green)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div></div><div class="mc-val" id="m-hoje">—</div><div style="font-size:11px;color:var(--green);margin-top:4px">conversas recentes</div><div class="mc-bar" style="background:linear-gradient(90deg,#059669,#10b981)"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ct">Volume por canal</div><span class="cb">Total</span></div><div class="cw"><canvas id="cCanal"></canvas></div></div>
+        <div class="card"><div class="ch"><div class="ct">Evolução mensal</div><span class="cb">Últimos 6 meses</span></div><div class="cw"><canvas id="cEvo"></canvas></div></div>
+      </div>
+    </div>
+    
+    <!-- PANEL PRODUTOS -->
+    <div id="panel-produtos" class="panel">
+      <div class="card"><div class="ch"><div class="ct">📦 Análise por Produto</div></div>
+      <div id="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;"></div>
+      <div id="product-detail" style="display:none;margin-top:20px;padding:20px;background:var(--bg3);border-radius:12px;"></div></div>
+    </div>
+    
+    <!-- PANEL LEADS WHATSAPP -->
+    <div id="panel-leads-wpp" class="panel">
+      <div class="card"><div class="ch"><div class="ct">📱 Leads WhatsApp</div><span class="cb" id="wpp-count">0</span></div>
+      <div class="srch" style="margin-bottom:15px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search-wpp" placeholder="Buscar telefone..." oninput="filterLeadsWpp()"/></div>
+      <div class="tw"><table><thead><tr><th>Telefone</th><th>Produto</th><th>Etapa</th><th>Última interação</th></tr></thead><tbody id="table-wpp"><tr><td colspan="4" class="empty">Carregando...</td></tr></tbody></table></div></div>
+    </div>
+    
+    <!-- PANEL LEADS INSTAGRAM -->
+    <div id="panel-leads-ig" class="panel">
+      <div class="card"><div class="ch"><div class="ct">📸 Leads Instagram</div><span class="cb" id="ig-count">0</span></div>
+      <div class="srch" style="margin-bottom:15px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search-ig" placeholder="Buscar usuário..." oninput="filterLeadsIg()"/></div>
+      <div class="tw"><table><thead><tr><th>Usuário</th><th>Produto</th><th>Etapa</th><th>Última interação</th></tr></thead><tbody id="table-ig"><tr><td colspan="4" class="empty
