@@ -684,27 +684,45 @@ function renderTbHuman(){
 
 // EXPORT CSV
 function exportCSV(type){
-  let rows=[],headers=[],filename='';
+  var rows=[],headers=[],filename='';
   if(type==='wpp'){
     headers=['Nome','Telefone','Produto Interesse','Etapa Funil','Ultima Interacao'];
-    rows=filtWpp.map(r=>[r.nome||'',r.telefone||'',normProd(r.produto_interesse||'')||'',r.etapa_funil||'',r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):'']);
+    rows=filtWpp.map(function(r){
+      return[r.nome||'',r.telefone||'',normProd(r.produto_interesse||'')||'',r.etapa_funil||'',r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):''];
+    });
     filename='leads_whatsapp.csv';
   }else if(type==='ig'){
     headers=['Instagram Handle','Nome','Produto Interesse','Etapa Funil','Ultima Interacao'];
-    rows=filtIg.map(r=>[r.instagram_handle?`@${r.instagram_handle}`:'',r.nome||'',normProd(r.produto_interesse||'')||'',r.etapa_funil||'',r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):'']);
+    rows=filtIg.map(function(r){
+      return[r.instagram_handle?('@'+r.instagram_handle):'',r.nome||'',normProd(r.produto_interesse||'')||'',r.etapa_funil||'',r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):''];
+    });
     filename='leads_instagram.csv';
   }else if(type==='human'){
     headers=['Telefone','Data Bloqueio'];
-    rows=filtHuman.map(r=>[r.telefone||'',r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):'']);
+    rows=filtHuman.map(function(r){
+      return[r.telefone||'',r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):''];
+    });
     filename='human_interventions.csv';
   }
-  const BOM='﻿';
-  const csv=BOM+[headers,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('
-');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=filename;a.click();
+  var bom='\uFEFF';
+  var lines2=[headers].concat(rows).map(function(r){
+    return r.map(function(c){
+      var s=String(c).replace(/"/g,'""');
+      return '"'+s+'"';
+    }).join(',');
+  });
+  var str=bom+lines2.join('\n');
+  var blob=new Blob([str],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.setAttribute('href',url);
+  a.setAttribute('download',filename);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
+
 
 // PAGINATION
 function renderPag(id,total,cur,cb){
