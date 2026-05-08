@@ -78,9 +78,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sb-gl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:0 8px;margin:.75rem 0 .3rem;}
 .sb-a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .15s;text-decoration:none;margin-bottom:1px;}
 .sb-a:hover{background:var(--bg3);color:var(--text);}
-.sb-a.active{background:var(--blueg);color:var(--blue);}
+.sb-a.on{background:var(--blueg);color:var(--blue);}
 .sb-a svg{flex-shrink:0;opacity:.7;}
-.sb-a.active svg{opacity:1;}
+.sb-a.on svg{opacity:1;}
 .sb-bot{padding:.875rem 1.25rem;border-top:1px solid var(--border);}
 .sb-st{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);margin-bottom:9px;}
 .sb-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pu 2s infinite;}
@@ -121,9 +121,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .cnt{padding:1.5rem 2rem 3rem;}
 .err-b{background:var(--redg);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:10px 16px;color:#f87171;font-size:13px;margin-bottom:1.25rem;display:none;}
 
-/* Panels */
-.panel{display: none;}
-.panel.active{display: block;}
+/* Panels - NOVO */
+.panel { display: none; }
+.panel.active { display: block; }
 
 /* METRIC GRID */
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.5rem;}
@@ -159,6 +159,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
 .ls{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
 
+/* Products Grid - NOVO */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.product-card{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;}
+.product-card:hover{transform:translateY(-3px);border-color:var(--blue);background:var(--blueg);}
+.product-card h4{font-size:14px;margin-bottom:8px;}
+.product-count{font-size:28px;font-weight:700;color:var(--blue);}
+.product-percent{font-size:11px;color:var(--text3);margin-top:5px;}
+.product-detail-panel{margin-top:20px;padding:20px;background:var(--bg3);border-radius:12px;display:none;}
+.product-detail-panel.show{display:block;}
+.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.detail-stat{background:var(--card);padding:12px;border-radius:10px;text-align:center;}
+.detail-stat-value{font-size:24px;font-weight:700;color:var(--blue);}
+.detail-stat-label{font-size:11px;color:var(--text3);margin-top:5px;}
+.close-detail{background:var(--red);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;float:right;}
+
+/* Settings - NOVO */
+.settings-form{max-width:500px;}
+.settings-group{margin-bottom:20px;}
+.settings-group label{display:block;margin-bottom:8px;font-weight:500;}
+.settings-group input{width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);}
+.btn-primary{background:var(--blue);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
+.btn-danger{background:var(--red);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
+.divider{margin:20px 0;border-top:1px solid var(--border);}
+
 /* TABLE */
 .tbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;}
 .srch{position:relative;}
@@ -184,30 +208,6 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
 .py{background:var(--yellowg);color:var(--yellow);}
 .pz{background:var(--bg3);color:var(--text2);}
 .empty{text-align:center;color:var(--text3);font-size:13px;padding:2.5rem;}
-
-/* Products Grid */
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
-.product-card{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;}
-.product-card:hover{transform:translateY(-3px);border-color:var(--blue);background:var(--blueg);}
-.product-card h4{font-size:14px;margin-bottom:8px;}
-.product-count{font-size:28px;font-weight:700;color:var(--blue);}
-.product-percent{font-size:11px;color:var(--text3);margin-top:5px;}
-.product-detail-panel{margin-top:20px;padding:20px;background:var(--bg3);border-radius:12px;display:none;}
-.product-detail-panel.show{display:block;}
-.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.detail-stat{background:var(--card);padding:12px;border-radius:10px;text-align:center;}
-.detail-stat-value{font-size:24px;font-weight:700;color:var(--blue);}
-.detail-stat-label{font-size:11px;color:var(--text3);margin-top:5px;}
-.close-detail{background:var(--red);color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;float:right;}
-
-/* Settings */
-.settings-form{max-width:500px;}
-.settings-group{margin-bottom:20px;}
-.settings-group label{display:block;margin-bottom:8px;font-weight:500;}
-.settings-group input{width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);}
-.btn-primary{background:var(--blue);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
-.btn-danger{background:var(--red);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;}
-.divider{margin:20px 0;border-top:1px solid var(--border);}
 
 /* MINI DONUT INSIDE METRIC */
 .mc-donut-wrap{position:absolute;right:12px;bottom:28px;width:56px;height:56px;opacity:.7;}
@@ -256,7 +256,7 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
   </div>
   <nav class="sb-nav">
     <div class="sb-gl">Menu Principal</div>
-    <a class="sb-a active" data-panel="analytics" href="#">
+    <a class="sb-a on" data-panel="analytics" href="#">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Analytics
     </a>
     <div class="sb-gl">Análises</div>
@@ -299,7 +299,6 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
 
 <!-- MAIN -->
 <main class="main">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-left">
       <div class="topbar-title" id="page-title">Analytics</div>
@@ -313,4 +312,5 @@ tbody td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </div>
       <button class="btn-upd" id="btn-ref" onclick="loadAll()">
-        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+       
