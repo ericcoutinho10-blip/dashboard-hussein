@@ -1026,12 +1026,29 @@ async function refreshPage(){
 async function doLogin(){
   var e=document.getElementById('le').value.trim(),p=document.getElementById('lp').value;
   var b=document.getElementById('btn-login'),err=document.getElementById('lerr');
+  if(!e||!p){err.textContent='Preencha e-mail e senha.';err.style.display='block';return;}
   err.style.display='none';b.disabled=true;b.textContent='Entrando...';
-  var res=await sb.auth.signInWithPassword({email:e,password:p});
-  if(res.error){err.textContent='Email ou senha incorretos.';err.style.display='block';b.disabled=false;b.textContent='Entrar no Sistema';}
-  else showDash(res.data.user);
+  try{
+    var res=await sb.auth.signInWithPassword({email:e,password:p});
+    if(res.error){err.textContent='Email ou senha incorretos. Verifique seus dados.';err.style.display='block';}
+    else{showDash(res.data.user);}
+  }catch(ex){
+    err.textContent='Erro de conexão. Tente novamente.';err.style.display='block';
+  }finally{
+    b.disabled=false;b.textContent='Entrar no Sistema';
+  }
 }
-async function doLogout(){await sb.auth.signOut();document.getElementById('dash').style.display='none';document.getElementById('login-screen').style.display='flex';currentUser=null;analyticsLoaded=false;}
+async function doLogout(){
+  await sb.auth.signOut();
+  document.getElementById('dash').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  currentUser=null;analyticsLoaded=false;
+  var btn=document.getElementById('btn-login');
+  btn.disabled=false;btn.textContent='Entrar no Sistema';
+  document.getElementById('le').value='';
+  document.getElementById('lp').value='';
+  document.getElementById('lerr').style.display='none';
+}
 function showDash(u){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('dash').style.display='block';
@@ -1498,7 +1515,7 @@ function buildModalFoot(foot,rowData,type){
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-loadAnalytics();
+/* loadAnalytics() is called by showDash() after auth */
 </script>
 </body>
 </html>
