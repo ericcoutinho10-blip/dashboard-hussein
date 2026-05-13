@@ -326,6 +326,169 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
 @media(max-width:900px){.g2{grid-template-columns:1fr;}}
 @media(max-width:768px){.sb{display:none;}.main{margin-left:0;}.page{padding:1rem;}.topbar{padding:.75rem 1rem;}.pd-header{padding:1rem;}.pd-body{padding:1rem 1rem 3rem;}.form-row{grid-template-columns:1fr;}}
 
+/* ── SCORE & RECENCY HELPERS ── */
+function leadScore(r,type){
+  var s=0;
+  if(r.nome&&r.nome.trim())s++;
+  if(r.telefone&&r.telefone.trim())s++;
+  if(normProd(r.produto_interesse||''))s++;
+  if(r.etapa_funil&&r.etapa_funil.trim())s++;
+  if(r.contato&&r.contato.trim())s++;
+  if(type==='ig'&&r.instagram_handle&&r.instagram_handle.trim())s=Math.min(5,s+1);
+  return Math.min(5,s);
+}
+function scoreBadge(s){
+  var dots='';for(var i=0;i<5;i++)dots+='<span style="opacity:'+(i<s?'1':'.2')+'">●</span>';
+  var cls='score-'+s;
+  var lbl=s>=4?'Quente':s>=3?'Morno':s>=2?'Frio':'Raso';
+  return '<span class="score-badge '+cls+'">'+dots+' '+lbl+'</span>';
+}
+function recFilter(arr,hours){
+  if(!hours)return arr;
+  var cutoff=new Date(Date.now()-hours*3600000).toISOString();
+  return arr.filter(function(r){var d=r.atualizado_em||r.last_response_at||r.criado_em;return d&&d>cutoff;});
+}
+function updateRecCounts(prefix,arr){
+  [0,2,6,24,168].forEach(function(h){
+    var el=document.getElementById('rc-'+prefix+'-'+h);
+    if(el){var n=h===0?arr.length:recFilter(arr,h).length;el.textContent=n?' ('+n+')':(h===0?' (0)':'');}
+  });
+}
+
+var recHoursWpp=0,recHoursIg=0;
+function setRecWpp(h){
+  recHoursWpp=h;
+  document.querySelectorAll('#rec-wpp .rec-tab').forEach(function(b){b.classList.remove('on');});
+  var idx=[0,2,6,24,168].indexOf(h);
+  document.querySelectorAll('#rec-wpp .rec-tab')[idx].classList.add('on');
+  filterLeadsWpp();
+}
+function setRecIg(h){
+  recHoursIg=h;
+  document.querySelectorAll('#rec-ig .rec-tab').forEach(function(b){b.classList.remove('on');});
+  var idx=[0,2,6,24,168].indexOf(h);
+  document.querySelectorAll('#rec-ig .rec-tab')[idx].classList.add('on');
+  filterLeadsIg();
+}
+
+function switchStatTab(tab){
+  document.querySelectorAll('.stat-tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.stat-section').forEach(function(s){s.classList.remove('active');});
+  var btn=document.querySelector('.stat-tab[onclick="switchStatTab(\''+tab+'\')"]');
+  if(btn)btn.classList.add('on');
+  var sec=document.getElementById('stat-'+tab);
+  if(sec){sec.classList.add('active');}
+  if(tab==='funnel'&&window._wpp)renderFunnelSection(window._wpp,window._ig||[],window._bloq||[]);
+  if(tab==='heatmap'&&window._wpp)renderHeatmapSection(window._wpp,window._ig||[]);
+}
+
+/* ── FUNNEL SECTION ── */
+function renderFunnelSection(wpp,ig,bloq){
+  renderFunnelChart('wpp',wpp,'funnelwpp-total');
+  renderFunnelChart('ig',ig,'funnelig-total');
+  renderHumanRate(wpp,ig,bloq);
+  renderQualityChart('wpp',wpp,'quality-wpp');
+  renderQualityChart('ig',ig,'quality-ig');
+}
+
+function renderFunnelChart(type,rows,totalId){
+  var fm={};
+  rows.forEach(function(r){var v=(r.etapa_funil||'').trim();if(v)fm[v]=(fm[v]||0)+1;});
+  var entries=Object.entries(fm).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var max=entries[0]?entries[0][1]:1;
+  document.getElementById(totalId).textContent=rows.length+' conversas';
+  var colors=['#4361ee','#7c3aed','#ff9f1c','#06d6a0','#ef476f','#06b6d4','#fbbf24','#ec4899'];
+  var html='<div class="funnel-wrap">';
+  entries.forEach(function(e,i){
+    var pct=Math.round(e[1]/max*100);
+    var convPct=Math.round(e[1]/rows.length*100);
+    var prevConv=i>0?Math.round(entries[i][1]/entries[i-1][1]*100):100;
+    html+='<div class="funnel-row">';
+    if(i>0)html+='<div class="funnel-arrow" style="color:'+colors[i]+'">↓</div><div class="funnel-conv" style="color:'+colors[i]+'">'+prevConv+'%</div>';
+    else html+='<div style="width:calc(16px + 52px)"></div>';
+    html+='<div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:'+pct+'%;background:'+colors[i]+'44;border:1.5px solid '+colors[i]+'66"></div><span class="funnel-bar-label" style="color:'+colors[i]+'">'+e[0]+'</span><span class="funnel-bar-pct">'+e[1]+' ('+convPct+'%)</span></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  document.getElementById('funnel-'+type+'-chart').innerHTML=html;
+}
+
+function renderHumanRate(wpp,ig,bloq){
+  var wppMap={};wpp.forEach(function(r){if(r.telefone)wppMap[r.telefone.replace(/\D/g,'')]=normProd(r.produto_interesse||'');});
+  var prodCounts={},humanCounts={};
+  wpp.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p){prodCounts[p]=(prodCounts[p]||0)+1;}});
+  ig.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p){prodCounts[p]=(prodCounts[p]||0)+1;}});
+  bloq.forEach(function(r){var tel=(r.telefone||'').replace(/\D/g,'');var p=wppMap[tel];if(p){humanCounts[p]=(humanCounts[p]||0)+1;}});
+  var entries=PRODUTOS.map(function(p){return{label:p.label,total:prodCounts[p.label]||0,human:humanCounts[p.label]||0,color:p.color};}).filter(function(e){return e.total>0;}).sort(function(a,b){return(b.human/Math.max(1,b.total))-(a.human/Math.max(1,a.total));});
+  var tot=bloq.length;
+  document.getElementById('human-rate-total').textContent=tot+' intervenções';
+  mk('cHumanRate',{type:'bar',data:{labels:entries.map(function(x){return x.label;}),datasets:[{label:'Total leads',data:entries.map(function(x){return x.total;}),backgroundColor:entries.map(function(x){return x.color+'33';}),borderColor:entries.map(function(x){return x.color+'66';}),borderWidth:1,borderRadius:6,borderSkipped:false},{label:'Intervenção humana',data:entries.map(function(x){return x.human;}),backgroundColor:entries.map(function(x){return x.color+'99';}),borderColor:entries.map(function(x){return x.color;}),borderWidth:1.5,borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:TICK(),font:{size:11}}},tooltip:{callbacks:{afterLabel:function(c){var d=c.dataset.data[c.dataIndex];var t=entries[c.dataIndex].total;return c.datasetIndex===1?'Taxa: '+Math.round(d/Math.max(1,t)*100)+'%':'';}}}},scales:{x:{ticks:{color:TICK(),font:{size:10}},grid:{color:GRID()},border:{display:false}},y:{ticks:{color:TICK(),font:{size:11}},grid:{display:false},border:{display:false}}}}});
+}
+
+function renderQualityChart(type,rows,totalId){
+  var scores=[0,0,0,0,0,0];
+  rows.forEach(function(r){var s=leadScore(r,type);scores[s]++;});
+  var total=rows.length||1;
+  var labels=['0 campos','1 campo','2 campos','3 campos','4 campos','Completo (5)'];
+  var colors=['#ef476f','#ff6b3d','#ff9f1c','#fbbf24','#06d6a0','#4361ee'];
+  document.getElementById(totalId).textContent=Math.round(scores[4]/total*100+scores[5]/total*100)+'% qualificados';
+  mk('cQual'+type.charAt(0).toUpperCase()+type.slice(1),{type:'doughnut',data:{labels:labels,datasets:[{data:scores,backgroundColor:colors.map(function(c){return c+'cc';}),borderColor:'rgba(255,255,255,.9)',borderWidth:3,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:TICK(),font:{size:11},padding:10}},tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.parsed+' ('+Math.round(c.parsed/total*100)+'%)';}}}}}}});
+}
+
+/* ── HEATMAP SECTION ── */
+function renderHeatmapSection(wpp,ig){
+  buildHeatmap('heatmap-wpp',wpp);
+  buildHeatmap('heatmap-ig',ig);
+  renderProdCanalChart(wpp,ig);
+}
+
+function buildHeatmap(containerId,rows){
+  var days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var grid={};
+  var maxVal=0;
+  rows.forEach(function(r){
+    var d=r.atualizado_em||r.criado_em||r.last_response_at;
+    if(!d)return;
+    var dt=new Date(d);
+    var day=dt.getDay();
+    var hour=dt.getHours();
+    var k=day+'-'+hour;
+    grid[k]=(grid[k]||0)+1;
+    if(grid[k]>maxVal)maxVal=grid[k];
+  });
+  if(!maxVal)maxVal=1;
+  var html='<table class="heatmap-table"><thead><tr><th></th>';
+  for(var h=0;h<24;h++)html+='<th>'+(h<10?'0':'')+h+'h</th>';
+  html+='</tr></thead><tbody>';
+  for(var d2=0;d2<7;d2++){
+    html+='<tr><td class="hm-day">'+days[d2]+'</td>';
+    for(var h2=0;h2<24;h2++){
+      var val=grid[d2+'-'+h2]||0;
+      var pct=val/maxVal;
+      var alpha=pct<0.01?0:0.08+pct*0.82;
+      var r=Math.round(67+pct*(239-67));
+      var g=Math.round(97+pct*(71-97));
+      var b=Math.round(238+pct*(111-238));
+      var bg=val>0?'rgba('+r+','+g+','+b+','+alpha.toFixed(2)+')':'transparent';
+      var tc=pct>0.5?'var(--text)':'var(--text3)';
+      html+='<td style="background:'+bg+';color:'+tc+'" title="'+val+' interações">'+(val||'')+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</tbody></table>';
+  document.getElementById(containerId).innerHTML=html;
+}
+
+function renderProdCanalChart(wpp,ig){
+  var wppC={},igC={};
+  wpp.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p)wppC[p]=(wppC[p]||0)+1;});
+  ig.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p)igC[p]=(igC[p]||0)+1;});
+  var entries=PRODUTOS.map(function(p){return{label:p.label,wpp:wppC[p.label]||0,ig:igC[p.label]||0,color:p.color};}).sort(function(a,b){return(b.wpp+b.ig)-(a.wpp+a.ig);});
+  var tot=(wpp.length+ig.length);
+  document.getElementById('bp-canal').textContent=tot+' conversas';
+  mk('cProdCanal',{type:'bar',data:{labels:entries.map(function(x){return x.label;}),datasets:[{label:'WhatsApp',data:entries.map(function(x){return x.wpp;}),backgroundColor:'rgba(67,97,238,.55)',borderColor:'#4361ee',borderWidth:1.5,borderRadius:8,borderSkipped:false},{label:'Instagram',data:entries.map(function(x){return x.ig;}),backgroundColor:'rgba(124,58,237,.55)',borderColor:'#7c3aed',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:TICK(),font:{size:11}}}},scales:{x:{ticks:{color:TICK(),font:{size:11}},grid:{color:GRID()},border:{display:false},stacked:false},y:{ticks:{color:TICK(),font:{size:11}},grid:{display:false},border:{display:false}}}}});
+}
+
 /* ── LEAD MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem;animation:pgIn .2s ease;}
 .modal-box{background:var(--card);backdrop-filter:blur(32px) saturate(2);-webkit-backdrop-filter:blur(32px) saturate(2);border:1.5px solid var(--border);border-radius:24px;box-shadow:0 24px 80px var(--sh),inset 0 1.5px 0 var(--inset);width:100%;max-width:640px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;position:relative;}
@@ -345,6 +508,47 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
 .msg-ts{font-size:10px;opacity:.45;margin-top:4px;text-align:right;}
 .modal-empty{text-align:center;color:var(--text3);font-size:13px;padding:2rem;}
 .modal-foot{padding:1rem 1.5rem;border-top:1.5px solid var(--border2);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+
+/* ── SCORE BADGE ── */
+.score-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+.score-5{background:rgba(6,214,160,.15);color:#06d6a0;border:1px solid rgba(6,214,160,.25);}
+.score-4{background:rgba(6,214,160,.09);color:#06d6a0;border:1px solid rgba(6,214,160,.18);}
+.score-3{background:rgba(251,191,36,.12);color:#b45309;border:1px solid rgba(251,191,36,.25);}
+.score-2{background:rgba(255,159,28,.1);color:#c2410c;border:1px solid rgba(255,159,28,.22);}
+.score-1,.score-0{background:rgba(239,71,111,.1);color:#ef476f;border:1px solid rgba(239,71,111,.2);}
+
+/* ── RECENCY FILTER TABS ── */
+.rec-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.rec-tab{padding:5px 13px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s;font-family:var(--font);}
+.rec-tab:hover{background:var(--bg4);color:var(--text);}
+.rec-tab.on{background:var(--blueg);border-color:rgba(67,97,238,.28);color:var(--blue);}
+.rec-tab-count{font-size:10px;font-weight:600;opacity:.7;margin-left:3px;}
+
+/* ── FUNNEL CONVERSION ── */
+.funnel-wrap{display:flex;flex-direction:column;gap:6px;margin-top:.75rem;}
+.funnel-row{display:flex;align-items:center;gap:10px;}
+.funnel-bar-bg{flex:1;height:28px;background:var(--bg3);border-radius:8px;overflow:hidden;position:relative;}
+.funnel-bar-fill{height:100%;border-radius:8px;transition:width .7s cubic-bezier(.34,1.56,.64,1);}
+.funnel-bar-label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;}
+.funnel-bar-pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:var(--text2);}
+.funnel-arrow{font-size:16px;color:var(--text3);flex-shrink:0;line-height:1;}
+.funnel-conv{font-size:11px;font-weight:700;min-width:52px;text-align:right;}
+
+/* ── HEATMAP ── */
+.heatmap-wrap{overflow-x:auto;}
+.heatmap-table{border-collapse:collapse;font-size:11px;width:100%;}
+.heatmap-table th{padding:4px 6px;color:var(--text3);font-weight:600;text-align:center;white-space:nowrap;}
+.heatmap-table td{width:36px;height:26px;border-radius:4px;text-align:center;font-size:10px;font-weight:600;color:var(--text2);cursor:default;transition:all .15s;}
+.heatmap-table td:hover{transform:scale(1.2);z-index:2;position:relative;}
+.hm-day{color:var(--text2);font-weight:600;padding-right:8px;white-space:nowrap;text-align:right!important;}
+
+/* ── SECTION SUB-TABS (analytics sub-nav) ── */
+.stat-tabs{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.stat-tab{padding:7px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .18s;font-family:var(--font);}
+.stat-tab:hover{background:var(--bg4);color:var(--text);}
+.stat-tab.on{background:var(--blueg);border-color:rgba(67,97,238,.25);color:var(--blue);}
+.stat-section{display:none;}
+.stat-section.active{display:block;}
 </style>
 </head>
 <body>
@@ -432,6 +636,12 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
   <!-- ANALÍTICA -->
   <div class="page active" id="page-analytics">
     <div class="err-b" id="err-analytics"></div>
+    <div class="stat-tabs">
+      <button class="stat-tab on" onclick="switchStatTab('overview')">Visão Geral</button>
+      <button class="stat-tab" onclick="switchStatTab('funnel')">Conversão de Funil</button>
+      <button class="stat-tab" onclick="switchStatTab('heatmap')">Heatmap de Atividade</button>
+    </div>
+    <div class="stat-section active" id="stat-overview">
     <div class="mgrid">
       <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="m-wpp">—</div><div class="mc-lbl">Conversas WhatsApp</div><div class="mc-spark"><canvas id="sp-wpp" role="img" aria-label="spark">.</canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
       <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="#7c3aed" stroke="none"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="m-ig">—</div><div class="mc-lbl">Conversas Instagram</div><div class="mc-spark"><canvas id="sp-ig" role="img" aria-label="spark">.</canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
@@ -446,7 +656,53 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
       <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Interesse por produto</div><span class="cb" id="bp-a">Total</span></div><div class="leg" id="leg-prod-a"></div><div class="cw" style="height:220px"><canvas id="cProdPie" role="img" aria-label="prod pie">.</canvas></div></div>
       <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Etapa do funil</div><span class="cb">Distribuição</span></div><div class="leg" id="leg-funil-a"></div><div class="cw" style="height:220px"><canvas id="cFunil" role="img" aria-label="funil">.</canvas></div></div>
     </div>
-  </div>
+    </div><!-- /stat-overview -->
+
+    <!-- FUNNEL SECTION -->
+    <div class="stat-section" id="stat-funnel">
+      <div class="g2" style="margin-bottom:16px">
+        <div class="card" style="margin-bottom:0">
+          <div class="ch"><div class="ct">Funil WPP — conversão por etapa</div><span class="cb" id="funnelwpp-total">—</span></div>
+          <div id="funnel-wpp-chart"></div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="ch"><div class="ct">Funil IG — conversão por etapa</div><span class="cb" id="funnelig-total">—</span></div>
+          <div id="funnel-ig-chart"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Taxa de intervenção humana por produto</div><span class="cb" id="human-rate-total">—</span></div>
+        <div style="height:260px"><canvas id="cHumanRate" role="img" aria-label="taxa humana">.</canvas></div>
+      </div>
+      <div class="g2" style="margin-top:16px">
+        <div class="card" style="margin-bottom:0">
+          <div class="ch"><div class="ct">Qualidade dos leads WPP</div><span class="cb" id="quality-wpp">—</span></div>
+          <div style="height:200px"><canvas id="cQualWpp" role="img" aria-label="qualidade wpp">.</canvas></div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="ch"><div class="ct">Qualidade dos leads IG</div><span class="cb" id="quality-ig">—</span></div>
+          <div style="height:200px"><canvas id="cQualIg" role="img" aria-label="qualidade ig">.</canvas></div>
+        </div>
+      </div>
+    </div><!-- /stat-funnel -->
+
+    <!-- HEATMAP SECTION -->
+    <div class="stat-section" id="stat-heatmap">
+      <div class="card" style="margin-bottom:16px">
+        <div class="ch"><div class="ct">Atividade WPP — hora × dia da semana</div><span class="cb">Total de interações</span></div>
+        <div class="heatmap-wrap" id="heatmap-wpp"></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="ch"><div class="ct">Atividade IG — hora × dia da semana</div><span class="cb">Total de interações</span></div>
+        <div class="heatmap-wrap" id="heatmap-ig"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Volume por produto — WPP vs IG</div><span class="cb" id="bp-canal">Total</span></div>
+        <div style="height:300px"><canvas id="cProdCanal" role="img" aria-label="produto canal">.</canvas></div>
+      </div>
+    </div><!-- /stat-heatmap -->
+
+  </div><!-- /page-analytics -->
 
   <!-- PRODUTOS -->
   <div class="page" id="page-produtos">
@@ -521,8 +777,15 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
     <div class="pg-hdr"><div><div class="pg-title">Leads WhatsApp</div><div class="pg-sub">Contatos identificados — clique numa linha para ver o histórico</div></div></div>
     <div class="err-b" id="err-leads-wpp"></div>
     <div class="card">
-      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-wpp" placeholder="Buscar nome ou telefone..." oninput="filterLeadsWpp()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('wpp')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-wpp">—</span></div>
-      <div class="tw"><table><thead><tr><th>#</th><th>Nome</th><th>Telefone</th><th>Contato</th><th>Produto interesse</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="tb-wpp"><tr><td colspan="6" class="empty">Carregando...</td></tr></tbody></table></div>
+      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-wpp" placeholder="Buscar nome, telefone, produto..." oninput="filterLeadsWpp()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('wpp')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-wpp">—</span></div>
+      <div class="tbar-left" style="margin-bottom:.75rem"><div class="rec-tabs" id="rec-wpp">
+        <button class="rec-tab on" onclick="setRecWpp(0)">Todos<span class="rec-tab-count" id="rc-wpp-0"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(2)">Últimas 2h<span class="rec-tab-count" id="rc-wpp-2"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(6)">6h<span class="rec-tab-count" id="rc-wpp-6"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(24)">24h<span class="rec-tab-count" id="rc-wpp-24"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(168)">7 dias<span class="rec-tab-count" id="rc-wpp-168"></span></button>
+      </div></div>
+      <div class="tw"><table><thead><tr><th>#</th><th>Score</th><th>Nome</th><th>Telefone</th><th>Contato</th><th>Produto interesse</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="tb-wpp"><tr><td colspan="8" class="empty">Carregando...</td></tr></tbody></table></div>
       <div class="pag" id="pag-wpp"></div>
     </div>
   </div>
@@ -532,8 +795,15 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
     <div class="pg-hdr"><div><div class="pg-title">Leads Instagram</div><div class="pg-sub">Seguidores do Instagram — clique numa linha para ver detalhes</div></div></div>
     <div class="err-b" id="err-leads-ig"></div>
     <div class="card">
-      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-ig" placeholder="Buscar @ ou nome..." oninput="filterLeadsIg()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('ig')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-ig">—</span></div>
-      <div class="tw"><table><thead><tr><th>#</th><th>@ Instagram</th><th>Nome</th><th>Telefone</th><th>Contato</th><th>Produto interesse</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="tb-ig"><tr><td colspan="6" class="empty">Carregando...</td></tr></tbody></table></div>
+      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-ig" placeholder="Buscar @, nome, telefone, produto..." oninput="filterLeadsIg()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('ig')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-ig">—</span></div>
+      <div class="tbar-left" style="margin-bottom:.75rem"><div class="rec-tabs" id="rec-ig">
+        <button class="rec-tab on" onclick="setRecIg(0)">Todos<span class="rec-tab-count" id="rc-ig-0"></span></button>
+        <button class="rec-tab" onclick="setRecIg(2)">Últimas 2h<span class="rec-tab-count" id="rc-ig-2"></span></button>
+        <button class="rec-tab" onclick="setRecIg(6)">6h<span class="rec-tab-count" id="rc-ig-6"></span></button>
+        <button class="rec-tab" onclick="setRecIg(24)">24h<span class="rec-tab-count" id="rc-ig-24"></span></button>
+        <button class="rec-tab" onclick="setRecIg(168)">7 dias<span class="rec-tab-count" id="rc-ig-168"></span></button>
+      </div></div>
+      <div class="tw"><table><thead><tr><th>#</th><th>Score</th><th>@ Instagram</th><th>Nome</th><th>Telefone</th><th>Contato</th><th>Produto interesse</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="tb-ig"><tr><td colspan="9" class="empty">Carregando...</td></tr></tbody></table></div>
       <div class="pag" id="pag-ig"></div>
     </div>
   </div>
@@ -553,7 +823,7 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
     <div class="pg-hdr"><div><div class="pg-title">Configurações</div><div class="pg-sub">Personalize sua experiência</div></div></div>
     <div style="margin-bottom:1.25rem"><div class="form-section-title">Aparência</div>
     <div class="theme-card"><div><div class="ti-title">Tema da interface</div><div class="ti-sub">Alterne entre modo claro e escuro</div></div><div class="toggle-wrap"><span style="font-size:13px;color:var(--text2)">Claro</span><div class="toggle" onclick="toggleTheme()"><div class="toggle-thumb"></div></div><span class="toggle-label" id="th-lbl-cfg">Escuro</span></div></div></div>
-    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.3</div></div><span class="pill pg">Ativo</span></div></div></div>
+    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.4</div></div><span class="pill pg">Ativo</span></div></div></div>
   </div>
 
   <!-- PERFIL -->
@@ -806,9 +1076,12 @@ async function loadAnalytics(){
     document.getElementById('tb-time').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     analyticsLoaded=true;
     renderAnalytics(wpp,ig,bloq);
+    renderFunnelSection(wpp,ig,bloq);
+    renderHeatmapSection(wpp,ig);
     renderProdPage([].concat(wpp,ig));
     allWppFull=results[3];filtWpp=allWppFull;
     allIgFull=results[4].filter(function(r){return r.instagram_handle||r.nome;});filtIg=allIgFull;
+    updateRecCounts('wpp',allWppFull);updateRecCounts('ig',allIgFull);
   }catch(e){showErr('analytics',e.message);}
 }
 
@@ -861,7 +1134,7 @@ async function loadLeadsWpp(){
   clrErr('leads-wpp');
   try{var rows=window._wppLeads||await qry('conversas_whatsapp','telefone,nome,usuario_id,produto_interesse,etapa_funil,contato,mensagens,atualizado_em','order=atualizado_em.desc');allWppFull=rows;filtWpp=rows;pWpp=1;document.getElementById('bc-wpp').textContent=rows.length+' leads';renderTbWpp();}catch(e){showErr('leads-wpp',e.message);}
 }
-function filterLeadsWpp(){var q=document.getElementById('si-wpp').value.toLowerCase();filtWpp=allWppFull.filter(function(r){return(r.nome||'').toLowerCase().indexOf(q)>=0||(r.telefone||'').indexOf(q)>=0||(r.contato||'').indexOf(q)>=0||(normProd(r.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;});pWpp=1;renderTbWpp();}
+function filterLeadsWpp(){var q=document.getElementById('si-wpp').value.toLowerCase();var base=recFilter(allWppFull,recHoursWpp);filtWpp=base.filter(function(r){return!q||(r.nome||'').toLowerCase().indexOf(q)>=0||(r.telefone||'').indexOf(q)>=0||(r.contato||'').indexOf(q)>=0||(normProd(r.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;});pWpp=1;document.getElementById('bc-wpp').textContent=filtWpp.length+' leads';renderTbWpp();}
 function renderTbWpp(){
   var s=(pWpp-1)*PER,rows=filtWpp.slice(s,s+PER);
   var tb=document.getElementById('tb-wpp');
@@ -871,8 +1144,9 @@ function renderTbWpp(){
     var dt=r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):'—';
     var contato=r.contato||'—';
     var contatoHtml=contato!=='—'?'<a href="https://wa.me/'+contato.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+contato+'</a>':'<span style="color:var(--text3)">—</span>';
+    var sc=leadScore(r,'wpp');
     var rowJson=JSON.stringify(r).replace(/'/g,"\'");
-    return'<tr style="cursor:pointer" onclick="openLeadModal(\'wpp\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td class="tnm">'+(r.nome||'—')+'</td><td class="tph">'+(r.telefone||'—')+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
+    return'<tr style="cursor:pointer" onclick="openLeadModal(\'wpp\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td class="tnm">'+(r.nome||'—')+'</td><td class="tph">'+(r.telefone||'—')+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
   }).join('');
   renderPag('pag-wpp',filtWpp.length,pWpp,function(p){pWpp=p;renderTbWpp();});
 }
@@ -881,7 +1155,7 @@ async function loadLeadsIg(){
   clrErr('leads-ig');
   try{var rows=window._igLeads||await qry('conversas','instagram_handle,nome,usuario_id,produto_interesse,etapa_funil,telefone,contato,instagram,last_response_at,mensagens,atualizado_em','order=atualizado_em.desc');allIgFull=rows.filter(function(r){return r.instagram_handle||r.nome;});filtIg=allIgFull;pIg=1;document.getElementById('bc-ig').textContent=allIgFull.length+' leads';renderTbIg();}catch(e){showErr('leads-ig',e.message);}
 }
-function filterLeadsIg(){var q=document.getElementById('si-ig').value.toLowerCase();filtIg=allIgFull.filter(function(r){return(r.instagram_handle||'').toLowerCase().indexOf(q)>=0||(r.nome||'').toLowerCase().indexOf(q)>=0||(r.telefone||'').indexOf(q)>=0||(r.contato||'').indexOf(q)>=0||(normProd(r.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;});pIg=1;renderTbIg();}
+function filterLeadsIg(){var q=document.getElementById('si-ig').value.toLowerCase();var base=recFilter(allIgFull,recHoursIg);filtIg=base.filter(function(r){return!q||(r.instagram_handle||'').toLowerCase().indexOf(q)>=0||(r.nome||'').toLowerCase().indexOf(q)>=0||(r.telefone||'').indexOf(q)>=0||(r.contato||'').indexOf(q)>=0||(normProd(r.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;});pIg=1;document.getElementById('bc-ig').textContent=filtIg.length+' leads';renderTbIg();}
 function renderTbIg(){
   var s=(pIg-1)*PER,rows=filtIg.slice(s,s+PER);
   var tb=document.getElementById('tb-ig');
@@ -893,8 +1167,9 @@ function renderTbIg(){
     var tel=r.telefone||'—';
     var contato=r.contato||'—';
     var contatoHtml=contato!=='—'?'<a href="https://wa.me/'+contato.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+contato+'</a>':'<span style="color:var(--text3)">—</span>';
+    var sc=leadScore(r,'ig');
     var rowJson=JSON.stringify(r).replace(/'/g,"\'");
-    return'<tr style="cursor:pointer" onclick="openLeadModal(\'ig\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td class="thdl">'+hdl+'</td><td class="tnm">'+(r.nome||'—')+'</td><td class="tph">'+tel+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
+    return'<tr style="cursor:pointer" onclick="openLeadModal(\'ig\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td class="thdl">'+hdl+'</td><td class="tnm">'+(r.nome||'—')+'</td><td class="tph">'+tel+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
   }).join('');
   renderPag('pag-ig',filtIg.length,pIg,function(p){pIg=p;renderTbIg();});
 }
@@ -987,6 +1262,169 @@ async function changePassword(){
   clrErr('perfil');var res=await sb.auth.updateUser({password:p1});
   if(res.error)showErr('perfil',res.error.message);
   else{showOk('perfil','Senha alterada!');document.getElementById('pf-new-pass').value='';document.getElementById('pf-conf-pass').value='';}
+}
+
+/* ── SCORE & RECENCY HELPERS ── */
+function leadScore(r,type){
+  var s=0;
+  if(r.nome&&r.nome.trim())s++;
+  if(r.telefone&&r.telefone.trim())s++;
+  if(normProd(r.produto_interesse||''))s++;
+  if(r.etapa_funil&&r.etapa_funil.trim())s++;
+  if(r.contato&&r.contato.trim())s++;
+  if(type==='ig'&&r.instagram_handle&&r.instagram_handle.trim())s=Math.min(5,s+1);
+  return Math.min(5,s);
+}
+function scoreBadge(s){
+  var dots='';for(var i=0;i<5;i++)dots+='<span style="opacity:'+(i<s?'1':'.2')+'">●</span>';
+  var cls='score-'+s;
+  var lbl=s>=4?'Quente':s>=3?'Morno':s>=2?'Frio':'Raso';
+  return '<span class="score-badge '+cls+'">'+dots+' '+lbl+'</span>';
+}
+function recFilter(arr,hours){
+  if(!hours)return arr;
+  var cutoff=new Date(Date.now()-hours*3600000).toISOString();
+  return arr.filter(function(r){var d=r.atualizado_em||r.last_response_at||r.criado_em;return d&&d>cutoff;});
+}
+function updateRecCounts(prefix,arr){
+  [0,2,6,24,168].forEach(function(h){
+    var el=document.getElementById('rc-'+prefix+'-'+h);
+    if(el){var n=h===0?arr.length:recFilter(arr,h).length;el.textContent=n?' ('+n+')':(h===0?' (0)':'');}
+  });
+}
+
+var recHoursWpp=0,recHoursIg=0;
+function setRecWpp(h){
+  recHoursWpp=h;
+  document.querySelectorAll('#rec-wpp .rec-tab').forEach(function(b){b.classList.remove('on');});
+  var idx=[0,2,6,24,168].indexOf(h);
+  document.querySelectorAll('#rec-wpp .rec-tab')[idx].classList.add('on');
+  filterLeadsWpp();
+}
+function setRecIg(h){
+  recHoursIg=h;
+  document.querySelectorAll('#rec-ig .rec-tab').forEach(function(b){b.classList.remove('on');});
+  var idx=[0,2,6,24,168].indexOf(h);
+  document.querySelectorAll('#rec-ig .rec-tab')[idx].classList.add('on');
+  filterLeadsIg();
+}
+
+function switchStatTab(tab){
+  document.querySelectorAll('.stat-tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.stat-section').forEach(function(s){s.classList.remove('active');});
+  var btn=document.querySelector('.stat-tab[onclick="switchStatTab(\''+tab+'\')"]');
+  if(btn)btn.classList.add('on');
+  var sec=document.getElementById('stat-'+tab);
+  if(sec){sec.classList.add('active');}
+  if(tab==='funnel'&&window._wpp)renderFunnelSection(window._wpp,window._ig||[],window._bloq||[]);
+  if(tab==='heatmap'&&window._wpp)renderHeatmapSection(window._wpp,window._ig||[]);
+}
+
+/* ── FUNNEL SECTION ── */
+function renderFunnelSection(wpp,ig,bloq){
+  renderFunnelChart('wpp',wpp,'funnelwpp-total');
+  renderFunnelChart('ig',ig,'funnelig-total');
+  renderHumanRate(wpp,ig,bloq);
+  renderQualityChart('wpp',wpp,'quality-wpp');
+  renderQualityChart('ig',ig,'quality-ig');
+}
+
+function renderFunnelChart(type,rows,totalId){
+  var fm={};
+  rows.forEach(function(r){var v=(r.etapa_funil||'').trim();if(v)fm[v]=(fm[v]||0)+1;});
+  var entries=Object.entries(fm).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var max=entries[0]?entries[0][1]:1;
+  document.getElementById(totalId).textContent=rows.length+' conversas';
+  var colors=['#4361ee','#7c3aed','#ff9f1c','#06d6a0','#ef476f','#06b6d4','#fbbf24','#ec4899'];
+  var html='<div class="funnel-wrap">';
+  entries.forEach(function(e,i){
+    var pct=Math.round(e[1]/max*100);
+    var convPct=Math.round(e[1]/rows.length*100);
+    var prevConv=i>0?Math.round(entries[i][1]/entries[i-1][1]*100):100;
+    html+='<div class="funnel-row">';
+    if(i>0)html+='<div class="funnel-arrow" style="color:'+colors[i]+'">↓</div><div class="funnel-conv" style="color:'+colors[i]+'">'+prevConv+'%</div>';
+    else html+='<div style="width:calc(16px + 52px)"></div>';
+    html+='<div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:'+pct+'%;background:'+colors[i]+'44;border:1.5px solid '+colors[i]+'66"></div><span class="funnel-bar-label" style="color:'+colors[i]+'">'+e[0]+'</span><span class="funnel-bar-pct">'+e[1]+' ('+convPct+'%)</span></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  document.getElementById('funnel-'+type+'-chart').innerHTML=html;
+}
+
+function renderHumanRate(wpp,ig,bloq){
+  var wppMap={};wpp.forEach(function(r){if(r.telefone)wppMap[r.telefone.replace(/\D/g,'')]=normProd(r.produto_interesse||'');});
+  var prodCounts={},humanCounts={};
+  wpp.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p){prodCounts[p]=(prodCounts[p]||0)+1;}});
+  ig.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p){prodCounts[p]=(prodCounts[p]||0)+1;}});
+  bloq.forEach(function(r){var tel=(r.telefone||'').replace(/\D/g,'');var p=wppMap[tel];if(p){humanCounts[p]=(humanCounts[p]||0)+1;}});
+  var entries=PRODUTOS.map(function(p){return{label:p.label,total:prodCounts[p.label]||0,human:humanCounts[p.label]||0,color:p.color};}).filter(function(e){return e.total>0;}).sort(function(a,b){return(b.human/Math.max(1,b.total))-(a.human/Math.max(1,a.total));});
+  var tot=bloq.length;
+  document.getElementById('human-rate-total').textContent=tot+' intervenções';
+  mk('cHumanRate',{type:'bar',data:{labels:entries.map(function(x){return x.label;}),datasets:[{label:'Total leads',data:entries.map(function(x){return x.total;}),backgroundColor:entries.map(function(x){return x.color+'33';}),borderColor:entries.map(function(x){return x.color+'66';}),borderWidth:1,borderRadius:6,borderSkipped:false},{label:'Intervenção humana',data:entries.map(function(x){return x.human;}),backgroundColor:entries.map(function(x){return x.color+'99';}),borderColor:entries.map(function(x){return x.color;}),borderWidth:1.5,borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:TICK(),font:{size:11}}},tooltip:{callbacks:{afterLabel:function(c){var d=c.dataset.data[c.dataIndex];var t=entries[c.dataIndex].total;return c.datasetIndex===1?'Taxa: '+Math.round(d/Math.max(1,t)*100)+'%':'';}}}},scales:{x:{ticks:{color:TICK(),font:{size:10}},grid:{color:GRID()},border:{display:false}},y:{ticks:{color:TICK(),font:{size:11}},grid:{display:false},border:{display:false}}}}});
+}
+
+function renderQualityChart(type,rows,totalId){
+  var scores=[0,0,0,0,0,0];
+  rows.forEach(function(r){var s=leadScore(r,type);scores[s]++;});
+  var total=rows.length||1;
+  var labels=['0 campos','1 campo','2 campos','3 campos','4 campos','Completo (5)'];
+  var colors=['#ef476f','#ff6b3d','#ff9f1c','#fbbf24','#06d6a0','#4361ee'];
+  document.getElementById(totalId).textContent=Math.round(scores[4]/total*100+scores[5]/total*100)+'% qualificados';
+  mk('cQual'+type.charAt(0).toUpperCase()+type.slice(1),{type:'doughnut',data:{labels:labels,datasets:[{data:scores,backgroundColor:colors.map(function(c){return c+'cc';}),borderColor:'rgba(255,255,255,.9)',borderWidth:3,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:TICK(),font:{size:11},padding:10}},tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.parsed+' ('+Math.round(c.parsed/total*100)+'%)';}}}}}}});
+}
+
+/* ── HEATMAP SECTION ── */
+function renderHeatmapSection(wpp,ig){
+  buildHeatmap('heatmap-wpp',wpp);
+  buildHeatmap('heatmap-ig',ig);
+  renderProdCanalChart(wpp,ig);
+}
+
+function buildHeatmap(containerId,rows){
+  var days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var grid={};
+  var maxVal=0;
+  rows.forEach(function(r){
+    var d=r.atualizado_em||r.criado_em||r.last_response_at;
+    if(!d)return;
+    var dt=new Date(d);
+    var day=dt.getDay();
+    var hour=dt.getHours();
+    var k=day+'-'+hour;
+    grid[k]=(grid[k]||0)+1;
+    if(grid[k]>maxVal)maxVal=grid[k];
+  });
+  if(!maxVal)maxVal=1;
+  var html='<table class="heatmap-table"><thead><tr><th></th>';
+  for(var h=0;h<24;h++)html+='<th>'+(h<10?'0':'')+h+'h</th>';
+  html+='</tr></thead><tbody>';
+  for(var d2=0;d2<7;d2++){
+    html+='<tr><td class="hm-day">'+days[d2]+'</td>';
+    for(var h2=0;h2<24;h2++){
+      var val=grid[d2+'-'+h2]||0;
+      var pct=val/maxVal;
+      var alpha=pct<0.01?0:0.08+pct*0.82;
+      var r=Math.round(67+pct*(239-67));
+      var g=Math.round(97+pct*(71-97));
+      var b=Math.round(238+pct*(111-238));
+      var bg=val>0?'rgba('+r+','+g+','+b+','+alpha.toFixed(2)+')':'transparent';
+      var tc=pct>0.5?'var(--text)':'var(--text3)';
+      html+='<td style="background:'+bg+';color:'+tc+'" title="'+val+' interações">'+(val||'')+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</tbody></table>';
+  document.getElementById(containerId).innerHTML=html;
+}
+
+function renderProdCanalChart(wpp,ig){
+  var wppC={},igC={};
+  wpp.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p)wppC[p]=(wppC[p]||0)+1;});
+  ig.forEach(function(r){var p=normProd(r.produto_interesse||'');if(p)igC[p]=(igC[p]||0)+1;});
+  var entries=PRODUTOS.map(function(p){return{label:p.label,wpp:wppC[p.label]||0,ig:igC[p.label]||0,color:p.color};}).sort(function(a,b){return(b.wpp+b.ig)-(a.wpp+a.ig);});
+  var tot=(wpp.length+ig.length);
+  document.getElementById('bp-canal').textContent=tot+' conversas';
+  mk('cProdCanal',{type:'bar',data:{labels:entries.map(function(x){return x.label;}),datasets:[{label:'WhatsApp',data:entries.map(function(x){return x.wpp;}),backgroundColor:'rgba(67,97,238,.55)',borderColor:'#4361ee',borderWidth:1.5,borderRadius:8,borderSkipped:false},{label:'Instagram',data:entries.map(function(x){return x.ig;}),backgroundColor:'rgba(124,58,237,.55)',borderColor:'#7c3aed',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:TICK(),font:{size:11}}}},scales:{x:{ticks:{color:TICK(),font:{size:11}},grid:{color:GRID()},border:{display:false},stacked:false},y:{ticks:{color:TICK(),font:{size:11}},grid:{display:false},border:{display:false}}}}});
 }
 
 /* ── LEAD MODAL ── */
