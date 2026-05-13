@@ -326,11 +326,21 @@ tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2)
 @media(max-width:900px){.g2{grid-template-columns:1fr;}}
 @media(max-width:768px){.sb{display:none;}.main{margin-left:0;}.page{padding:1rem;}.topbar{padding:.75rem 1rem;}.pd-header{padding:1rem;}.pd-body{padding:1rem 1rem 3rem;}.form-row{grid-template-columns:1fr;}}
 
+/* ── TIME AGO HELPER ── */
+function timeAgo(date){
+  var diff=Math.floor((Date.now()-date.getTime())/1000);
+  if(diff<60)return 'agora';
+  if(diff<3600)return Math.floor(diff/60)+'min atrás';
+  if(diff<86400)return Math.floor(diff/3600)+'h atrás';
+  if(diff<604800)return Math.floor(diff/86400)+'d atrás';
+  return date.toLocaleDateString('pt-BR');
+}
+
 /* ── SCORE & RECENCY HELPERS ── */
 function leadScore(r,type){
   var s=0;
-  if(r.nome&&r.nome.trim())s++;
-  if(r.telefone&&r.telefone.trim())s++;
+  if(r.nome&&r.nome.trim()&&r.nome!=='Contato'&&r.nome!=='Amigo')s++;
+  if((r.telefone&&r.telefone.trim())||(r.usuario_id&&r.usuario_id.trim()))s++;
   if(normProd(r.produto_interesse||''))s++;
   if(r.etapa_funil&&r.etapa_funil.trim())s++;
   if(r.contato&&r.contato.trim())s++;
@@ -716,7 +726,7 @@ function switchStatTab(tab){
     <div class="pg-hdr"><div><div class="pg-title">Configurações</div><div class="pg-sub">Personalize sua experiência</div></div></div>
     <div style="margin-bottom:1.25rem"><div class="form-section-title">Aparência</div>
     <div class="theme-card"><div><div class="ti-title">Tema da interface</div><div class="ti-sub">Alterne entre modo claro e escuro</div></div><div class="toggle-wrap"><span style="font-size:13px;color:var(--text2)">Claro</span><div class="toggle" onclick="toggleTheme()"><div class="toggle-thumb"></div></div><span class="toggle-label" id="th-lbl-cfg">Escuro</span></div></div></div>
-    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.4</div></div><span class="pill pg">Ativo</span></div></div></div>
+    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.5</div></div><span class="pill pg">Ativo</span></div></div></div>
   </div>
 
   <!-- PERFIL -->
@@ -1044,7 +1054,7 @@ async function loadLeadsWpp(){
   clrErr('leads-wpp');
   try{var rows=window._wppLeads||await qry('conversas_whatsapp','telefone,nome,usuario_id,produto_interesse,etapa_funil,contato,mensagens,atualizado_em','order=atualizado_em.desc');allWppFull=rows;filtWpp=rows;pWpp=1;document.getElementById('bc-wpp').textContent=rows.length+' leads';renderTbWpp();}catch(e){showErr('leads-wpp',e.message);}
 }
-function filterLeadsWpp(){var q=document.getElementById('si-wpp').value.toLowerCase();var base=recFilter(allWppFull,recHoursWpp);filtWpp=base.filter(function(r){return!q||(r.nome||'').toLowerCase().indexOf(q)>=0||(r.telefone||'').indexOf(q)>=0||(r.contato||'').indexOf(q)>=0||(normProd(r.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;});pWpp=1;document.getElementById('bc-wpp').textContent=filtWpp.length+' leads';renderTbWpp();}
+function filterLeadsWpp(){var q=document.getElementById('si-wpp').value.toLowerCase();var base=recFilter(allWppFull,recHoursWpp);filtWpp=base.filter(function(r){return!q||(r.nome||'').toLowerCase().indexOf(q)>=0||(r.telefone||'').indexOf(q)>=0||(r.usuario_id||'').indexOf(q)>=0||(r.contato||'').indexOf(q)>=0||(normProd(r.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;});pWpp=1;document.getElementById('bc-wpp').textContent=filtWpp.length+' leads';renderTbWpp();}
 function renderTbWpp(){
   var s=(pWpp-1)*PER,rows=filtWpp.slice(s,s+PER);
   var tb=document.getElementById('tb-wpp');
@@ -1055,8 +1065,11 @@ function renderTbWpp(){
     var contato=r.contato||'—';
     var contatoHtml=contato!=='—'?'<a href="https://wa.me/'+contato.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+contato+'</a>':'<span style="color:var(--text3)">—</span>';
     var sc=leadScore(r,'wpp');
+    // Fallback: use usuario_id as telefone if telefone field empty
+    var telDisplay=r.telefone||r.usuario_id||'—';
+    var telLink=telDisplay!=='—'?'<a href="https://wa.me/'+telDisplay.replace(/\D/g,'')+'" target="_blank" style="color:var(--blue);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;" title="Abrir WhatsApp">'+telDisplay+'</a>':'<span style="color:var(--text3)">—</span>';
     var rowJson=JSON.stringify(r).replace(/'/g,"\'");
-    return'<tr style="cursor:pointer" onclick="openLeadModal(\'wpp\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td class="tnm">'+(r.nome||'—')+'</td><td class="tph">'+(r.telefone||'—')+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
+    return'<tr style="cursor:pointer" onclick="openLeadModal(\'wpp\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td class="tnm">'+(r.nome||'—')+'</td><td>'+telLink+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
   }).join('');
   renderPag('pag-wpp',filtWpp.length,pWpp,function(p){pWpp=p;renderTbWpp();});
 }
@@ -1078,8 +1091,16 @@ function renderTbIg(){
     var contato=r.contato||'—';
     var contatoHtml=contato!=='—'?'<a href="https://wa.me/'+contato.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+contato+'</a>':'<span style="color:var(--text3)">—</span>';
     var sc=leadScore(r,'ig');
+    // Fallback: use usuario_id to derive instagram handle if empty
+    var igHandle=r.instagram_handle||'';
+    if(!igHandle&&r.usuario_id&&!r.usuario_id.match(/^\d+$/))igHandle=r.usuario_id.replace('@','');
+    var hdlDisplay=igHandle?('<a href="https://instagram.com/'+igHandle+'" target="_blank" style="color:var(--purple);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">@'+igHandle+'</a>'):'<span style="color:var(--text3)">—</span>';
+    // telefone fallback from usuario_id for IG leads that have phone
+    var telIg=r.telefone||'';
+    if(!telIg&&r.usuario_id&&r.usuario_id.match(/^\d+$/))telIg=r.usuario_id;
+    var telIgHtml=telIg?'<a href="https://wa.me/'+telIg.replace(/\D/g,'')+'" target="_blank" style="color:var(--blue);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+telIg+'</a>':'<span style="color:var(--text3)">—</span>';
     var rowJson=JSON.stringify(r).replace(/'/g,"\'");
-    return'<tr style="cursor:pointer" onclick="openLeadModal(\'ig\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td class="thdl">'+hdl+'</td><td class="tnm">'+(r.nome||'—')+'</td><td class="tph">'+tel+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
+    return'<tr style="cursor:pointer" onclick="openLeadModal(\'ig\','+rowJson+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td>'+hdlDisplay+'</td><td class="tnm">'+(r.nome||'—')+'</td><td>'+telIgHtml+'</td><td>'+contatoHtml+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';
   }).join('');
   renderPag('pag-ig',filtIg.length,pIg,function(p){pIg=p;renderTbIg();});
 }
@@ -1108,12 +1129,14 @@ function renderTbHuman(){
     var dt=r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):'—';
     var tel=(r.telefone||'').replace(/\D/g,'');
     var lead=wppMap[tel]||{};
+    // Fallback: nome/produto from lead map using usuario_id too
     var nome=lead.nome||'—';
     var prod=normProd(lead.produto_interesse||'')||'—';
     var etapa=lead.etapa_funil||'—';
-    var telFmt=r.telefone||'—';
-    var wppLink=tel?'<a href="https://wa.me/'+tel+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+telFmt+'</a>':'<span style="color:var(--text3)">—</span>';
-    return'<tr><td style="color:var(--text3);font-size:12px;font-weight:600">'+(i+1)+'</td><td>'+wppLink+'</td><td class="tnm">'+nome+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+etapa+'</span></td><td class="tdt">'+dt+'</td><td><span class="pill pr">Humano ativo</span></td></tr>';
+    var telFmt=r.telefone||tel||'—';
+    var wppLink=tel?'<a href="https://wa.me/'+tel+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+telFmt+'</a>':'<span style="color:var(--text3)">—</span>';
+    var dtAgo=r.bloqueado_em?timeAgo(new Date(r.bloqueado_em)):'—';
+    return'<tr><td style="color:var(--text3);font-size:12px;font-weight:600">'+(i+1)+'</td><td>'+wppLink+'</td><td class="tnm">'+nome+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+etapa+'</span></td><td class="tdt" title="'+dt+'">'+dtAgo+'</td><td><span class="pill pr">Humano ativo</span></td></tr>';
   }).join('');
 }
 
@@ -1174,11 +1197,21 @@ async function changePassword(){
   else{showOk('perfil','Senha alterada!');document.getElementById('pf-new-pass').value='';document.getElementById('pf-conf-pass').value='';}
 }
 
+/* ── TIME AGO HELPER ── */
+function timeAgo(date){
+  var diff=Math.floor((Date.now()-date.getTime())/1000);
+  if(diff<60)return 'agora';
+  if(diff<3600)return Math.floor(diff/60)+'min atrás';
+  if(diff<86400)return Math.floor(diff/3600)+'h atrás';
+  if(diff<604800)return Math.floor(diff/86400)+'d atrás';
+  return date.toLocaleDateString('pt-BR');
+}
+
 /* ── SCORE & RECENCY HELPERS ── */
 function leadScore(r,type){
   var s=0;
-  if(r.nome&&r.nome.trim())s++;
-  if(r.telefone&&r.telefone.trim())s++;
+  if(r.nome&&r.nome.trim()&&r.nome!=='Contato'&&r.nome!=='Amigo')s++;
+  if((r.telefone&&r.telefone.trim())||(r.usuario_id&&r.usuario_id.trim()))s++;
   if(normProd(r.produto_interesse||''))s++;
   if(r.etapa_funil&&r.etapa_funil.trim())s++;
   if(r.contato&&r.contato.trim())s++;
@@ -1354,7 +1387,8 @@ function openLeadModal(type, rowData){
 
   // Build meta tags
   var metaHtml='';
-  if(rowData.telefone) metaHtml+='<div class="modal-tag"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.2 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg><span>'+rowData.telefone+'</span></div>';
+  var telMeta=rowData.telefone||(rowData.usuario_id&&rowData.usuario_id.match(/^\d+$/)?rowData.usuario_id:'');
+  if(telMeta) metaHtml+='<div class="modal-tag"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.2 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg><span>'+telMeta+'</span></div>';
   if(rowData.instagram_handle) metaHtml+='<div class="modal-tag"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg><span>@'+rowData.instagram_handle+'</span></div>';
   var prod=normProd(rowData.produto_interesse||'')||null;
   if(prod) metaHtml+='<div class="modal-tag"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="pill '+pillCls(prod)+'">'+prod+'</span></div>';
@@ -1398,7 +1432,7 @@ function openLeadModal(type, rowData){
 
 function buildModalFoot(foot,rowData,type){
   var btns='';
-  var tel=(rowData.telefone||rowData.contato||'').replace(/\D/g,'');
+  var tel=(rowData.telefone||rowData.contato||(rowData.usuario_id&&rowData.usuario_id.match(/^\d+$/)?rowData.usuario_id:'')||'').replace(/\D/g,'');
   if(tel) btns+='<a href="https://wa.me/'+tel+'" target="_blank" class="btn-gl btn-gl-green" style="text-decoration:none"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Abrir no WhatsApp</a>';
   var ig=rowData.instagram_handle||rowData.instagram||'';
   if(ig) btns+='<a href="https://instagram.com/'+ig.replace('@','')+'" target="_blank" class="btn-gl" style="text-decoration:none;"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>Ver Instagram</a>';
