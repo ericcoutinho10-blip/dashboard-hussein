@@ -350,7 +350,7 @@ function leadScore(r,type){
 function scoreBadge(s){
   var dots='';for(var i=0;i<5;i++)dots+='<span style="opacity:'+(i<s?'1':'.2')+'">●</span>';
   var cls='score-'+s;
-  var lbl=s>=4?'Quente':s>=3?'Morno':s>=2?'Frio':'Raso';
+  var lbl=s>=5?'Pronto':s>=4?'Quente':s>=3?'Qualificado':s>=2?'Morno':s>=1?'Frio':'Desconhecido';
   return '<span class="score-badge '+cls+'">'+dots+' '+lbl+'</span>';
 }
 function recFilter(arr,hours){
@@ -726,7 +726,7 @@ function switchStatTab(tab){
     <div class="pg-hdr"><div><div class="pg-title">Configurações</div><div class="pg-sub">Personalize sua experiência</div></div></div>
     <div style="margin-bottom:1.25rem"><div class="form-section-title">Aparência</div>
     <div class="theme-card"><div><div class="ti-title">Tema da interface</div><div class="ti-sub">Alterne entre modo claro e escuro</div></div><div class="toggle-wrap"><span style="font-size:13px;color:var(--text2)">Claro</span><div class="toggle" onclick="toggleTheme()"><div class="toggle-thumb"></div></div><span class="toggle-label" id="th-lbl-cfg">Escuro</span></div></div></div>
-    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.6</div></div><span class="pill pg">Ativo</span></div></div></div>
+    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.7</div></div><span class="pill pg">Ativo</span></div></div></div>
   </div>
 
   <!-- PERFIL -->
@@ -1221,7 +1221,7 @@ function leadScore(r,type){
 function scoreBadge(s){
   var dots='';for(var i=0;i<5;i++)dots+='<span style="opacity:'+(i<s?'1':'.2')+'">●</span>';
   var cls='score-'+s;
-  var lbl=s>=4?'Quente':s>=3?'Morno':s>=2?'Frio':'Raso';
+  var lbl=s>=5?'Pronto':s>=4?'Quente':s>=3?'Qualificado':s>=2?'Morno':s>=1?'Frio':'Desconhecido';
   return '<span class="score-badge '+cls+'">'+dots+' '+lbl+'</span>';
 }
 function recFilter(arr,hours){
@@ -1310,9 +1310,9 @@ function renderQualityChart(type,rows,totalId){
   var scores=[0,0,0,0,0,0];
   rows.forEach(function(r){var s=leadScore(r,type);scores[s]++;});
   var total=rows.length||1;
-  var labels=['0 campos','1 campo','2 campos','3 campos','4 campos','Completo (5)'];
+  var labels=['Desconhecido','Frio','Morno','Qualificado','Quente','Pronto'];
   var colors=['#ef476f','#ff6b3d','#ff9f1c','#fbbf24','#06d6a0','#4361ee'];
-  document.getElementById(totalId).textContent=Math.round((scores[4]+scores[5])/total*100)+'% qualificados';
+  document.getElementById(totalId).textContent=Math.round((scores[4]+scores[5])/total*100)+'% quentes ou prontos';
   var cid='cQual'+type.charAt(0).toUpperCase()+type.slice(1);
   mk(cid,{type:'doughnut',data:{labels:labels,datasets:[{data:scores,backgroundColor:colors.map(function(c){return c+'cc';}),borderColor:'rgba(255,255,255,.9)',borderWidth:3,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:TICK(),font:{size:11},padding:10}},tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.parsed+' ('+Math.round(c.parsed/total*100)+'%)';}}}}}});
 }
