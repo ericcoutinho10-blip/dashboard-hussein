@@ -717,7 +717,7 @@ function switchStatTab(tab){
     <div class="err-b" id="err-human"></div>
     <div class="card">
       <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-human" placeholder="Buscar telefone..." oninput="filterHuman()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('human')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-human">—</span></div>
-      <div class="tw"><table><thead><tr><th>#</th><th>Telefone</th><th>Nome</th><th>Produto</th><th>Etapa funil</th><th>Data bloqueio</th><th>Status</th></tr></thead><tbody id="tb-human"><tr><td colspan="4" class="empty">Carregando...</td></tr></tbody></table></div>
+      <div class="tw"><table><thead><tr><th>#</th><th>Canal</th><th>Contato</th><th>Nome</th><th>Produto</th><th>Etapa funil</th><th>Há quanto tempo</th></tr></thead><tbody id="tb-human"><tr><td colspan="4" class="empty">Carregando...</td></tr></tbody></table></div>
     </div>
   </div>
 
@@ -726,7 +726,7 @@ function switchStatTab(tab){
     <div class="pg-hdr"><div><div class="pg-title">Configurações</div><div class="pg-sub">Personalize sua experiência</div></div></div>
     <div style="margin-bottom:1.25rem"><div class="form-section-title">Aparência</div>
     <div class="theme-card"><div><div class="ti-title">Tema da interface</div><div class="ti-sub">Alterne entre modo claro e escuro</div></div><div class="toggle-wrap"><span style="font-size:13px;color:var(--text2)">Claro</span><div class="toggle" onclick="toggleTheme()"><div class="toggle-thumb"></div></div><span class="toggle-label" id="th-lbl-cfg">Escuro</span></div></div></div>
-    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.7</div></div><span class="pill pg">Ativo</span></div></div></div>
+    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard v6.8</div></div><span class="pill pg">Ativo</span></div></div></div>
   </div>
 
   <!-- PERFIL -->
@@ -1111,32 +1111,107 @@ async function loadHuman(){
 }
 function filterHuman(){
   var q=document.getElementById('si-human').value.toLowerCase();
-  var wppMap={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wppMap[r.telefone.replace(/\D/g,'')]=r;});
+  var wppMap={};
+  (window._wppLeads||[]).forEach(function(r){
+    if(r.telefone)wppMap[r.telefone.replace(/\D/g,'')]=r;
+    if(r.usuario_id)wppMap[String(r.usuario_id).replace(/\D/g,'')]=r;
+  });
+  var igMap={};
+  (window._igLeads||[]).forEach(function(r){
+    if(r.usuario_id)igMap[String(r.usuario_id)]=r;
+    if(r.instagram_handle)igMap[r.instagram_handle.replace('@','')]=r;
+  });
   filtHuman=allHumanFull.filter(function(r){
-    var tel=(r.telefone||'').replace(/\D/g,'');
-    var lead=wppMap[tel]||{};
-    return(r.telefone||'').indexOf(q)>=0||(lead.nome||'').toLowerCase().indexOf(q)>=0||(normProd(lead.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;
+    var raw=String(r.telefone||'').replace(/\D/g,'');
+    var isIG=raw.length>=15;
+    var lead=isIG?(igMap[raw]||{}):(wppMap[raw]||{});
+    return(r.telefone||'').indexOf(q)>=0||
+      (lead.nome||'').toLowerCase().indexOf(q)>=0||
+      (lead.instagram_handle||'').toLowerCase().indexOf(q)>=0||
+      (normProd(lead.produto_interesse||'')||'').toLowerCase().indexOf(q)>=0;
   });
   renderTbHuman();
 }
 function renderTbHuman(){
   var tb=document.getElementById('tb-human');
   if(!filtHuman.length){tb.innerHTML='<tr><td colspan="7" class="empty">Nenhum registro</td></tr>';return;}
-  // Build lookup map from wpp leads by phone
+
+  // WPP map: keyed by telefone AND usuario_id (stripped of non-digits)
   var wppMap={};
-  (window._wppLeads||[]).forEach(function(r){if(r.telefone)wppMap[r.telefone.replace(/\D/g,'')]=r;});
+  (window._wppLeads||[]).forEach(function(r){
+    if(r.telefone)wppMap[r.telefone.replace(/\D/g,'')]=r;
+    if(r.usuario_id)wppMap[String(r.usuario_id).replace(/\D/g,'')]=r;
+  });
+  // IG map: keyed by usuario_id (numeric Instagram sender ID)
+  var igMap={};
+  (window._igLeads||[]).forEach(function(r){
+    if(r.usuario_id)igMap[String(r.usuario_id)]=r;
+    if(r.instagram_handle)igMap[r.instagram_handle.replace('@','')]=r;
+  });
+
   tb.innerHTML=filtHuman.map(function(r,i){
     var dt=r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):'—';
-    var tel=(r.telefone||'').replace(/\D/g,'');
-    var lead=wppMap[tel]||{};
-    // Fallback: nome/produto from lead map using usuario_id too
+    var dtAgo=r.bloqueado_em?timeAgo(new Date(r.bloqueado_em)):'—';
+    var raw=String(r.telefone||'').replace(/\D/g,'');
+
+    // Detect channel: IG IDs are typically 15-16 digits and start with big numbers
+    // WPP numbers are 10-13 digits (country+DDD+number)
+    var isIG=raw.length>=15;
+    var lead=isIG?(igMap[raw]||{}):(wppMap[raw]||{});
+
     var nome=lead.nome||'—';
     var prod=normProd(lead.produto_interesse||'')||'—';
     var etapa=lead.etapa_funil||'—';
-    var telFmt=r.telefone||tel||'—';
-    var wppLink=tel?'<a href="https://wa.me/'+tel+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+telFmt+'</a>':'<span style="color:var(--text3)">—</span>';
-    var dtAgo=r.bloqueado_em?timeAgo(new Date(r.bloqueado_em)):'—';
-    return'<tr><td style="color:var(--text3);font-size:12px;font-weight:600">'+(i+1)+'</td><td>'+wppLink+'</td><td class="tnm">'+nome+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+etapa+'</span></td><td class="tdt" title="'+dt+'">'+dtAgo+'</td><td><span class="pill pr">Humano ativo</span></td></tr>';
+
+    var contactHtml='';
+    if(isIG){
+      // Instagram lead — show @handle link
+      var handle=lead.instagram_handle||'';
+      if(!handle&&lead.usuario_id)handle='';
+      if(handle){
+        contactHtml='<a href="https://instagram.com/'+handle.replace('@','')+'" target="_blank" style="color:var(--purple);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px">'+
+          '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>'+
+          '@'+handle.replace('@','')+'</a>';
+      } else {
+        // No handle yet — show raw ID with IG icon
+        contactHtml='<span style="color:var(--purple);font-family:monospace;font-size:11px;opacity:.7">'+
+          '<svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:3px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>'+
+          raw+'</span>';
+      }
+      // Also show phone if available in IG lead
+      if(lead.telefone){
+        var telClean=lead.telefone.replace(/\D/g,'');
+        contactHtml+='<a href="https://wa.me/'+telClean+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:11px;font-weight:600;text-decoration:none;margin-left:6px">'+
+          '<svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+
+          lead.telefone+'</a>';
+      }
+    } else {
+      // WhatsApp lead — show phone link
+      var telDisplay=lead.telefone||raw;
+      var telClean2=(telDisplay).replace(/\D/g,'');
+      if(telClean2){
+        contactHtml='<a href="https://wa.me/'+telClean2+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px">'+
+          '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+
+          telDisplay+'</a>';
+      } else {
+        contactHtml='<span style="color:var(--text3)">—</span>';
+      }
+    }
+
+    // Canal badge
+    var canalBadge=isIG?
+      '<span class="pill pp" style="font-size:10px;padding:2px 7px">IG</span>':
+      '<span class="pill pb" style="font-size:10px;padding:2px 7px">WPP</span>';
+
+    return'<tr>'+
+      '<td style="color:var(--text3);font-size:12px;font-weight:600">'+(i+1)+'</td>'+
+      '<td>'+canalBadge+'</td>'+
+      '<td>'+contactHtml+'</td>'+
+      '<td class="tnm">'+nome+'</td>'+
+      '<td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td>'+
+      '<td><span class="pill pz">'+etapa+'</span></td>'+
+      '<td class="tdt" title="'+dt+'">'+dtAgo+'</td>'+
+      '</tr>';
   }).join('');
 }
 
@@ -1145,12 +1220,23 @@ function exportCSV(type){
   if(type==='wpp'){headers=['Nome','Telefone','Contato','Produto Interesse','Etapa Funil','Ultima Interacao'];rows=filtWpp.map(function(r){return[r.nome||'',r.telefone||'',r.contato||'',normProd(r.produto_interesse||'')||'',r.etapa_funil||'',r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):''];});filename='leads_whatsapp.csv';}
   else if(type==='ig'){headers=['Instagram Handle','Nome','Telefone','Contato','Produto Interesse','Etapa Funil','Ultima Interacao'];rows=filtIg.map(function(r){return[r.instagram_handle?('@'+r.instagram_handle):'',r.nome||'',r.telefone||'',r.contato||'',normProd(r.produto_interesse||'')||'',r.etapa_funil||'',r.atualizado_em?new Date(r.atualizado_em).toLocaleString('pt-BR'):''];});filename='leads_instagram.csv';}
   else if(type==='human'){
-    var wppMap2={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wppMap2[r.telefone.replace(/\D/g,'')]=r;});
-    headers=['Telefone','Nome','Produto','Etapa Funil','Data Bloqueio'];
+    var wppMap2={};
+    (window._wppLeads||[]).forEach(function(r){
+      if(r.telefone)wppMap2[r.telefone.replace(/\D/g,'')]=r;
+      if(r.usuario_id)wppMap2[String(r.usuario_id).replace(/\D/g,'')]=r;
+    });
+    var igMap2={};
+    (window._igLeads||[]).forEach(function(r){
+      if(r.usuario_id)igMap2[String(r.usuario_id)]=r;
+    });
+    headers=['Canal','Contato','Nome','Produto','Etapa Funil','Data Bloqueio'];
     rows=filtHuman.map(function(r){
-      var tel=(r.telefone||'').replace(/\D/g,'');
-      var lead=wppMap2[tel]||{};
-      return[r.telefone||'',lead.nome||'',normProd(lead.produto_interesse||'')||'',lead.etapa_funil||'',r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):''];
+      var raw=String(r.telefone||'').replace(/\D/g,'');
+      var isIG=raw.length>=15;
+      var lead=isIG?(igMap2[raw]||{}):(wppMap2[raw]||{});
+      var canal=isIG?'Instagram':'WhatsApp';
+      var contato=isIG?(lead.instagram_handle?('@'+lead.instagram_handle.replace('@','')):raw):(lead.telefone||raw);
+      return[canal,contato,lead.nome||'',normProd(lead.produto_interesse||'')||'',lead.etapa_funil||'',r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):''];
     });
     filename='human_interventions.csv';
   }
