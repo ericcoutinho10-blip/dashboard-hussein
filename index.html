@@ -978,7 +978,7 @@ function goPage(id){
     showDayEvents(CAL_SELECTED);
   }
   else if(id==='mapa')renderMapa();
-  else if(id==='relatorio')renderRelatorio();
+  else if(id==='relatorio'){renderRelatorio();setTimeout(gerarResumoIA,300);}
 }
 
 function switchStatTab(tab){
@@ -1496,27 +1496,93 @@ function renderProdCanalChartTo(canvasId,wpp,ig){
   mk(canvasId,{type:'bar',data:{labels:entries.map(function(x){return x.label;}),datasets:[{label:'WPP',data:entries.map(function(x){return x.wpp;}),backgroundColor:'rgba(67,97,238,.55)',borderColor:'#4361ee',borderWidth:1,borderRadius:6,borderSkipped:false},{label:'IG',data:entries.map(function(x){return x.ig;}),backgroundColor:'rgba(124,58,237,.55)',borderColor:'#7c3aed',borderWidth:1,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:TICK(),font:{size:11}}}},scales:{y:{ticks:{color:TICK(),font:{size:10}},grid:{color:GRID()},border:{display:false}},x:{ticks:{color:TICK(),font:{size:10}},grid:{display:false},border:{display:false}}}}});
 }
 
-async function gerarResumoIA(){
+function gerarResumoIA(){
   var btn=document.querySelector('button[onclick="gerarResumoIA()"]');
-  if(btn){btn.disabled=true;btn.textContent='Gerando...';}
+  if(btn){btn.disabled=true;btn.textContent='Analisando...';}
   var el=document.getElementById('rel-ai-text');
-  if(el)el.textContent='Analisando os dados do período...';
-  try{
-    var wpp=filterByPeriod(window._wppLeads||[]);
-    var ig=filterByPeriod(window._igLeads||[]);
-    var bloq=filterByPeriod(window._bloqAll||[]);
-    var all=wpp.concat(ig);
-    var pm={};all.forEach(function(r){var v=normProd(r.produto_interesse||'');if(v)pm[v]=(pm[v]||0)+1;});
-    var top3=Object.entries(pm).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
-    var quentes=wpp.filter(function(r){return leadScore(r,'wpp')>=4;}).length+ig.filter(function(r){return leadScore(r,'ig')>=4;}).length;
-    var periodLabel=currentPeriodDays===0?'histórico completo':('últimos '+currentPeriodDays+' dias');
-    var prompt='Você é analista de marketing digital e growth para o Dr. Hussein Awada, médico com 2.2M seguidores no Instagram e automação de IA no WhatsApp e Instagram Direct.\n\nGere um resumo executivo conciso (3-4 parágrafos) em português brasileiro para apresentar ao Dr. Hussein sobre o '+periodLabel+':\n\n- Total de leads: '+all.length+' ('+wpp.length+' WPP + '+ig.length+' IG)\n- Intervenções humanas: '+bloq.length+'\n- Top produtos: '+top3.map(function(x){return x[0]+' ('+x[1]+')';}).join(', ')+'\n- Leads quentes/prontos: '+quentes+'\n- Taxa intervenção: '+Math.round(bloq.length/Math.max(1,all.length)*100)+'%\n\nSeja direto, use números reais, destaque pontos positivos e sugira 1-2 ações práticas de growth.';
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
-    var data=await resp.json();
-    var text=data.content&&data.content[0]&&data.content[0].text;
-    if(el)el.textContent=text||'Não foi possível gerar o resumo.';
-  }catch(e){if(el)el.textContent='Erro ao gerar resumo: '+e.message;}
-  if(btn){btn.disabled=false;btn.textContent='Gerar Resumo IA';}
+  if(el)el.innerHTML='<span style="color:var(--text3)">Gerando análise...</span>';
+
+  setTimeout(function(){
+    try{
+      var wpp=filterByPeriod(window._wppLeads||[]);
+      var ig=filterByPeriod(window._igLeads||[]);
+      var bloq=filterByPeriod(window._bloqAll||[]);
+      var all=wpp.concat(ig);
+      var total=all.length;
+      var periodLabel=currentPeriodDays===0?'histórico completo':('últimos '+currentPeriodDays+' dias');
+
+      // Product counts
+      var pm={};all.forEach(function(r){var v=normProd(r.produto_interesse||'');if(v)pm[v]=(pm[v]||0)+1;});
+      var pe=Object.entries(pm).sort(function(a,b){return b[1]-a[1];});
+      var topProd=pe[0]?pe[0][0]:'—';
+      var topProdN=pe[0]?pe[0][1]:0;
+      var top3=pe.slice(0,3);
+
+      // Scores
+      var prontos=wpp.filter(function(r){return leadScore(r,'wpp')>=5;}).length + ig.filter(function(r){return leadScore(r,'ig')>=5;}).length;
+      var quentes=wpp.filter(function(r){return leadScore(r,'wpp')>=4;}).length + ig.filter(function(r){return leadScore(r,'ig')>=4;}).length;
+      var txHuman=Math.round(bloq.length/Math.max(1,total)*100);
+      var txQuente=Math.round(quentes/Math.max(1,total)*100);
+
+      // Funil
+      var funnelMap={};all.forEach(function(r){var v=(r.etapa_funil||'').trim();if(v)funnelMap[v]=(funnelMap[v]||0)+1;});
+      var oferta=(funnelMap['OFERTA']||0)+(funnelMap['Oferta']||0);
+      var txConv=Math.round(oferta/Math.max(1,total)*100);
+
+      // Canal split
+      var pctWpp=total>0?Math.round(wpp.length/total*100):0;
+      var pctIg=total>0?Math.round(ig.length/total*100):0;
+
+      // Daily average
+      var days2=currentPeriodDays||7;
+      var mediaDay=Math.round(total/days2);
+
+      // Build summary
+      var lines=[];
+
+      // Para 1 — visão geral
+      var abertura='📊 <strong>Visão Geral — '+periodLabel+'</strong><br>';
+      var p1='No período analisado, foram registradas <strong>'+total.toLocaleString('pt-BR')+' conversas</strong> entre WhatsApp ('+wpp.length+' · '+pctWpp+'%) e Instagram Direct ('+ig.length+' · '+pctIg+'%), com uma média de <strong>'+mediaDay+' leads/dia</strong>. ';
+      if(total>50) p1+='O volume indica uma operação de IA ativa e escalável. ';
+      if(quentes>0) p1+='<strong>'+quentes+' leads ('+txQuente+'%)</strong> estão classificados como Quentes ou Prontos para abordagem.';
+      lines.push(abertura+p1);
+
+      // Para 2 — produtos
+      if(pe.length>0){
+        var p2='🎯 <strong>Produtos em destaque</strong><br>';
+        p2+='O produto mais buscado foi <strong>'+topProd+'</strong> com '+topProdN+' conversas ('+Math.round(topProdN/Math.max(1,total)*100)+'% do total). ';
+        if(top3.length>1) p2+='Em seguida: '+top3.slice(1).map(function(x){return x[0]+' ('+x[1]+')';}).join(' e ')+'. ';
+        if(oferta>0) p2+='<strong>'+oferta+' leads chegaram à etapa de Oferta</strong> ('+txConv+'% de conversão funil).';
+        else p2+='Nenhum lead chegou ainda à etapa de Oferta — oportunidade de nutrição no funil.';
+        lines.push(p2);
+      }
+
+      // Para 3 — intervenção humana
+      var p3='👤 <strong>Intervenção Humana & Qualidade</strong><br>';
+      p3+='Foram registradas <strong>'+bloq.length+' intervenções humanas</strong> ('+txHuman+'% das conversas). ';
+      if(txHuman>30) p3+='Taxa elevada — recomendável revisar os scripts da IA para os produtos com maior volume de intervenção. ';
+      else if(txHuman>10) p3+='Taxa dentro do esperado para um assistente de IA em maturação. ';
+      else p3+='Excelente: a IA está resolvendo a grande maioria das conversas de forma autônoma. ';
+      p3+='<strong>'+prontos+' leads com perfil Pronto</strong> aguardam contato humano ativo.';
+      lines.push(p3);
+
+      // Para 4 — recomendações
+      var p4='🚀 <strong>Recomendações de Growth</strong><br>';
+      var recs=[];
+      if(prontos>0) recs.push('Priorizar contato ativo com os <strong>'+prontos+' leads "Prontos"</strong> — alto potencial de conversão imediata');
+      if(topProd&&topProdN>5) recs.push('Criar conteúdo específico para <strong>'+topProd+'</strong> no Instagram para aproveitar o maior volume de interesse orgânico');
+      if(txHuman>20) recs.push('Treinar a IA com mais exemplos de atendimento de <strong>'+topProd+'</strong> para reduzir intervenção humana');
+      if(pctIg>50) recs.push('Focar budget de tráfego pago no Instagram — canal dominante com '+pctIg+'% dos leads');
+      if(recs.length===0) recs.push('Manter cadência de conteúdo e monitorar evolução semanal dos indicadores');
+      p4+=recs.slice(0,3).map(function(r,i){return (i+1)+'. '+r;}).join('<br>');
+      lines.push(p4);
+
+      if(el) el.innerHTML=lines.join('<br><br>');
+    }catch(e){
+      if(el)el.textContent='Erro ao gerar análise: '+e.message;
+    }
+    if(btn){btn.disabled=false;btn.textContent='Atualizar Análise';}
+  }, 400);
 }
 
 function exportarPDF(){
