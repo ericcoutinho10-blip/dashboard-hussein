@@ -696,75 +696,38 @@ function switchStatTab(tab){
       <button class="stat-tab" onclick="switchStatTab('heatmap')">Heatmap de Atividade</button>
     </div>
     <div class="stat-section active" id="stat-overview">
-    <div class="stat-tabs">
-      <button class="stat-tab on" onclick="switchStatTab('overview')">Visão Geral</button>
-      <button class="stat-tab" onclick="switchStatTab('funnel')">Conversão de Funil</button>
-      <button class="stat-tab" onclick="switchStatTab('heatmap')">Heatmap de Atividade</button>
-    </div>
-    <div class="stat-section active" id="stat-overview">
-    <div class="mgrid">
-      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="m-wpp">—</div><div class="mc-lbl">Conversas WhatsApp</div><div class="mc-spark"><canvas id="sp-wpp" role="img" aria-label="spark">.</canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
-      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="#7c3aed" stroke="none"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="m-ig">—</div><div class="mc-lbl">Conversas Instagram</div><div class="mc-spark"><canvas id="sp-ig" role="img" aria-label="spark">.</canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
-      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(239,71,111,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ef476f" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="mc-badge" style="background:rgba(239,71,111,.08);color:#ef476f">Human</span></div><div class="mc-val" id="m-bloq">—</div><div class="mc-lbl">Intervenções humanas</div><div class="mc-spark"><canvas id="sp-bloq" role="img" aria-label="spark">.</canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#ef476f,#ff6b9d)"></div></div>
-      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(6,214,160,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#06d6a0" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="mc-badge" style="background:rgba(6,214,160,.08);color:#06d6a0">Hoje</span></div><div class="mc-val" id="m-hoje">—</div><div class="mc-lbl">Ativas últimas 24h</div><div class="mc-spark"><canvas id="sp-hoje" role="img" aria-label="spark">.</canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#06d6a0,#34d399)"></div></div>
-    </div>
-    <div class="g2">
-      <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Volume por canal</div><span class="cb">Total</span></div><div class="leg"><span class="li"><span class="ls" style="background:#4361ee"></span>WhatsApp</span><span class="li"><span class="ls" style="background:#7c3aed"></span>Instagram</span></div><div class="cw" style="height:180px"><canvas id="cCanal" role="img" aria-label="canal">.</canvas></div></div>
-      <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Evolução mensal</div><span class="cb">Últimos 6 meses</span></div><div class="leg"><span class="li"><span class="ls" style="background:#4361ee"></span>WhatsApp</span><span class="li"><span class="ls" style="background:#7c3aed"></span>Instagram</span></div><div class="cw" style="height:180px"><canvas id="cEvo" role="img" aria-label="evolução">.</canvas></div></div>
-    </div>
-    <div class="g2" style="margin-top:16px">
-      <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Interesse por produto</div><span class="cb" id="bp-a">Total</span></div><div class="leg" id="leg-prod-a"></div><div class="cw" style="height:220px"><canvas id="cProdPie" role="img" aria-label="prod pie">.</canvas></div></div>
-      <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Etapa do funil</div><span class="cb">Distribuição</span></div><div class="leg" id="leg-funil-a"></div><div class="cw" style="height:220px"><canvas id="cFunil" role="img" aria-label="funil">.</canvas></div></div>
-    </div>
-    </div><!-- /stat-overview -->
-
-    <!-- FUNNEL SECTION -->
-    <div class="stat-section" id="stat-funnel">
-      <div class="g2" style="margin-bottom:16px">
-        <div class="card" style="margin-bottom:0">
-          <div class="ch"><div class="ct">Funil WPP — conversão por etapa</div><span class="cb" id="funnelwpp-total">—</span></div>
-          <div id="funnel-wpp-chart"></div>
-        </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="ch"><div class="ct">Funil IG — conversão por etapa</div><span class="cb" id="funnelig-total">—</span></div>
-          <div id="funnel-ig-chart"></div>
-        </div>
+      <div class="mgrid">
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="m-wpp">—</div><div class="mc-lbl">Conversas WhatsApp</div><div class="mc-delta flat" id="d-wpp"></div><div class="mc-spark"><canvas id="sp-wpp"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="m-ig">—</div><div class="mc-lbl">Conversas Instagram</div><div class="mc-delta flat" id="d-ig"></div><div class="mc-spark"><canvas id="sp-ig"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(239,71,111,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ef476f" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="mc-badge" style="background:rgba(239,71,111,.08);color:#ef476f">Human</span></div><div class="mc-val" id="m-bloq">—</div><div class="mc-lbl">Intervenções humanas</div><div class="mc-delta flat" id="d-bloq"></div><div class="mc-spark"><canvas id="sp-bloq"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#ef476f,#ff6b9d)"></div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(6,214,160,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#06d6a0" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="mc-badge" style="background:rgba(6,214,160,.08);color:#06d6a0">Período</span></div><div class="mc-val" id="m-hoje">—</div><div class="mc-lbl">Total no período</div><div class="mc-delta flat" id="d-hoje"></div><div class="mc-spark"><canvas id="sp-hoje"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#06d6a0,#34d399)"></div></div>
       </div>
-      <div class="card">
-        <div class="ch"><div class="ct">Taxa de intervenção humana por produto</div><span class="cb" id="human-rate-total">—</span></div>
-        <div style="height:260px"><canvas id="cHumanRate" role="img" aria-label="taxa humana">.</canvas></div>
+      <div class="g2">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Volume por canal</div><span class="cb">Período selecionado</span></div><div class="leg"><span class="li"><span class="ls" style="background:#4361ee"></span>WhatsApp</span><span class="li"><span class="ls" style="background:#7c3aed"></span>Instagram</span></div><div class="cw" style="height:180px"><canvas id="cCanal"></canvas></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Evolução diária</div><span class="cb" id="evo-period-label">Últimos 7 dias</span></div><div class="leg"><span class="li"><span class="ls" style="background:#4361ee"></span>WhatsApp</span><span class="li"><span class="ls" style="background:#7c3aed"></span>Instagram</span></div><div class="cw" style="height:180px"><canvas id="cEvo"></canvas></div></div>
       </div>
       <div class="g2" style="margin-top:16px">
-        <div class="card" style="margin-bottom:0">
-          <div class="ch"><div class="ct">Qualidade dos leads WPP</div><span class="cb" id="quality-wpp">—</span></div>
-          <div style="height:200px"><canvas id="cQualWpp" role="img" aria-label="qualidade wpp">.</canvas></div>
-        </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="ch"><div class="ct">Qualidade dos leads IG</div><span class="cb" id="quality-ig">—</span></div>
-          <div style="height:200px"><canvas id="cQualIg" role="img" aria-label="qualidade ig">.</canvas></div>
-        </div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Interesse por produto</div><span class="cb" id="bp-a">—</span></div><div class="leg" id="leg-prod-a"></div><div class="cw" style="height:220px"><canvas id="cProdPie"></canvas></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Crescimento acumulado</div><span class="cb">Total leads</span></div><div class="cw" style="height:220px"><canvas id="cAcumulado"></canvas></div></div>
       </div>
-    </div><!-- /stat-funnel -->
-
-    <!-- HEATMAP SECTION -->
+    </div>
+    <div class="stat-section" id="stat-funnel">
+      <div class="g2" style="margin-bottom:16px">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Funil WPP — etapas</div><span class="cb" id="funnelwpp-total">—</span></div><div id="funnel-wpp-chart"></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Funil IG — etapas</div><span class="cb" id="funnelig-total">—</span></div><div id="funnel-ig-chart"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Qualidade leads WPP</div><span class="cb" id="quality-wpp">—</span></div><div style="height:200px"><canvas id="cQualWpp"></canvas></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Qualidade leads IG</div><span class="cb" id="quality-ig">—</span></div><div style="height:200px"><canvas id="cQualIg"></canvas></div></div>
+      </div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Taxa de intervenção humana por produto</div><span class="cb" id="human-rate-total">—</span></div><div style="height:260px"><canvas id="cHumanRate"></canvas></div></div>
+    </div>
     <div class="stat-section" id="stat-heatmap">
-      <div class="card" style="margin-bottom:16px">
-        <div class="ch"><div class="ct">Atividade WPP — hora × dia da semana</div><span class="cb">Total de interações</span></div>
-        <div class="heatmap-wrap" id="heatmap-wpp"></div>
-      </div>
-      <div class="card" style="margin-bottom:16px">
-        <div class="ch"><div class="ct">Atividade IG — hora × dia da semana</div><span class="cb">Total de interações</span></div>
-        <div class="heatmap-wrap" id="heatmap-ig"></div>
-      </div>
-      <div class="card">
-        <div class="ch"><div class="ct">Volume por produto — WPP vs IG</div><span class="cb" id="bp-canal">Total</span></div>
-        <div style="height:300px"><canvas id="cProdCanal" role="img" aria-label="produto canal">.</canvas></div>
-      </div>
-    </div><!-- /stat-heatmap -->
-
-  </div><!-- /page-analytics -->
-
-  <!-- PRODUTOS -->
+      <div class="card" style="margin-bottom:16px"><div class="ch"><div class="ct">Atividade WPP — hora × dia da semana</div><span class="cb">Clique para ver leads</span></div><div class="heatmap-wrap" id="heatmap-wpp"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="ch"><div class="ct">Atividade IG — hora × dia da semana</div><span class="cb">Clique para ver leads</span></div><div class="heatmap-wrap" id="heatmap-ig"></div></div>
+      <div class="card"><div class="ch"><div class="ct">Volume por produto — WPP vs IG</div><span class="cb" id="bp-canal">—</span></div><div style="height:300px"><canvas id="cProdCanal"></canvas></div></div>
+    </div>
+  </div>
   <div class="page" id="page-produtos">
     <div class="pg-hdr"><div><div class="pg-title">Produtos</div><div class="pg-sub">Toque em um produto para ver métricas detalhadas</div></div></div>
     <div class="err-b" id="err-produtos"></div>
@@ -870,15 +833,80 @@ function switchStatTab(tab){
 
   <!-- HUMAN -->
   <div class="page" id="page-human">
-    <div class="pg-hdr"><div><div class="pg-title">Human</div><div class="pg-sub">Conversas com intervenção humana — top 500 enriquecidas com dados do WhatsApp</div></div></div>
-    <div class="err-b" id="err-human"></div>
+    <!-- KPI strip -->
+    <div class="mgrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem;" id="human-kpis">
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(239,71,111,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ef476f" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="mc-badge" style="background:rgba(239,71,111,.08);color:#ef476f">Total</span></div><div class="mc-val" id="h-total">—</div><div class="mc-lbl">Intervenções humanas</div><div class="mc-accent" style="background:linear-gradient(90deg,#ef476f,#ff6b9d)"></div></div>
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(255,159,28,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ff9f1c" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="mc-badge" style="background:rgba(255,159,28,.08);color:#ff9f1c">Hoje</span></div><div class="mc-val" id="h-hoje">—</div><div class="mc-lbl">Intervenções hoje</div><div class="mc-accent" style="background:linear-gradient(90deg,#ff9f1c,#fbbf24)"></div></div>
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="h-wpp">—</div><div class="mc-lbl">Via WhatsApp</div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="h-ig">—</div><div class="mc-lbl">Via Instagram</div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;">
+      <!-- Chart: intervenções por hora -->
+      <div class="card" style="margin-bottom:0">
+        <div class="ch"><div class="ct">Intervenções por hora do dia</div><span class="cb">Padrão de atividade</span></div>
+        <div style="height:160px"><canvas id="cHumanHour"></canvas></div>
+      </div>
+      <!-- Chart: produto que mais gera intervenção -->
+      <div class="card" style="margin-bottom:0">
+        <div class="ch"><div class="ct">Intervenções por produto</div><span class="cb" id="h-prod-total">—</span></div>
+        <div style="height:160px"><canvas id="cHumanProd"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Main table -->
     <div class="card">
-      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-human" placeholder="Buscar telefone..." oninput="filterHuman()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('human')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-human">—</span></div>
-      <div class="tw"><table><thead><tr><th>#</th><th>Canal</th><th>Contato</th><th>Nome</th><th>Produto</th><th>Etapa funil</th><th>Há quanto tempo</th></tr></thead><tbody id="tb-human"><tr><td colspan="4" class="empty">Carregando...</td></tr></tbody></table></div>
+      <div class="tbar">
+        <div class="tbar-left" style="flex-wrap:wrap;gap:8px;">
+          <div class="srch">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="si-human" placeholder="Buscar nome, telefone ou @..." oninput="filterHuman()"/>
+          </div>
+          <div class="rec-tabs" id="rec-human-tabs">
+            <button class="rec-tab on" onclick="setHumanRec(0)">Todos<span class="rec-tab-count" id="hrc-0"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(1)">Última hora<span class="rec-tab-count" id="hrc-1"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(6)">6h<span class="rec-tab-count" id="hrc-6"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(24)">24h<span class="rec-tab-count" id="hrc-24"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(168)">7 dias<span class="rec-tab-count" id="hrc-168"></span></button>
+          </div>
+          <!-- Canal filter -->
+          <div style="display:flex;gap:4px;">
+            <button class="rec-tab on" id="hcf-all" onclick="setHumanCanal('all')">Todos</button>
+            <button class="rec-tab" id="hcf-wpp" onclick="setHumanCanal('wpp')"><span style="color:var(--blue)">●</span> WPP</button>
+            <button class="rec-tab" id="hcf-ig" onclick="setHumanCanal('ig')"><span style="color:var(--purple)">●</span> IG</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="cb" id="bc-human">—</span>
+          <button class="btn-gl btn-gl-green" onclick="exportCSV('human')">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+        </div>
+      </div>
+      <div class="err-b" id="err-human"></div>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Canal</th>
+              <th>Contato</th>
+              <th>Nome</th>
+              <th>Produto</th>
+              <th>Etapa funil</th>
+              <th>Score</th>
+              <th>Interveio há</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tb-human">
+            <tr><td colspan="9" class="empty">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-
-  <!-- CONFIG -->
   <div class="page" id="page-config">
     <div class="pg-hdr"><div><div class="pg-title">Configurações</div><div class="pg-sub">Personalize sua experiência</div></div></div>
     <div style="margin-bottom:1.25rem"><div class="form-section-title">Aparência</div>
@@ -1316,9 +1344,176 @@ function filterLeadsIg(){var q=document.getElementById('si-ig').value.toLowerCas
 function renderTbIg(){var s=(pIg-1)*PER,rows=filtIg.slice(s,s+PER);var tb=document.getElementById('tb-ig');if(!rows.length){tb.innerHTML='<tr><td colspan="9" class="empty">Nenhum lead</td></tr>';document.getElementById('pag-ig').innerHTML='';return;}tb.innerHTML=rows.map(function(r,i){var prod=normProdSmart(r.produto_interesse||'',r.mensagens)||'—';var dt=fmtDate(r.atualizado_em||r.last_response_at);var sc=leadScore(r,'ig');var hdl=r.instagram_handle?(r.instagram_handle.replace('@','')):'';if(!hdl&&r.usuario_id&&!String(r.usuario_id).match(/^\d+$/))hdl=String(r.usuario_id).replace('@','');var hh=hdl?'<a href="https://instagram.com/'+hdl+'" target="_blank" style="color:var(--purple);font-family:monospace;font-size:12px;font-weight:700;text-decoration:none;">@'+hdl+'</a>':'<span style="color:var(--text3)">—</span>';var tel=r.telefone||'';if(!tel&&r.usuario_id&&String(r.usuario_id).match(/^\d+$/))tel=String(r.usuario_id);var th=tel?'<a href="https://wa.me/'+tel.replace(/\D/g,'')+'" target="_blank" style="color:var(--blue);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+tel+'</a>':'<span style="color:var(--text3)">—</span>';var ct=r.contato||'—';var ch=ct!=='—'?'<a href="https://wa.me/'+ct.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+ct+'</a>':'<span style="color:var(--text3)">—</span>';var rj=JSON.stringify(r).replace(/'/g,"\\'");return'<tr style="cursor:pointer" onclick="openLeadModal(\'ig\','+rj+')"><td style="color:var(--text3);font-size:12px;font-weight:600">'+(s+i+1)+'</td><td>'+scoreBadge(sc)+'</td><td>'+hh+'</td><td class="tnm">'+(r.nome||'—')+'</td><td>'+th+'</td><td>'+ch+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+(r.etapa_funil||'—')+'</span></td><td class="tdt">'+dt+'</td></tr>';}).join('');renderPag('pag-ig',filtIg.length,pIg,function(p){pIg=p;renderTbIg();});}
 
 /* ── HUMAN (UNLIMITED) ── */
-async function loadHuman(){clrErr('human');try{var all=[],bs=1000,off=0;while(true){var chunk=await qry('bloqueios_ia','telefone,bloqueado_em','order=bloqueado_em.desc&limit='+bs+'&offset='+off);if(!chunk||!chunk.length)break;all=all.concat(chunk);if(chunk.length<bs)break;off+=bs;}window._bloqAll=all;allHumanFull=all;var cutoff=periodCutoff();filtHuman=cutoff?all.filter(function(r){return r.bloqueado_em&&r.bloqueado_em>cutoff;}):all;var hb=document.getElementById('badge-human');if(hb){hb.style.display=all.length?'':'none';hb.textContent=all.length;}var el=document.getElementById('bc-human');if(el)el.textContent=filtHuman.length+' registros';renderTbHuman();}catch(e){showErr('human',e.message);}}
-function filterHuman(){var q=document.getElementById('si-human').value.toLowerCase();var wM={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wM[r.telefone.replace(/\D/g,'')]=r;if(r.usuario_id)wM[String(r.usuario_id).replace(/\D/g,'')]=r;});var iM={};(window._igLeads||[]).forEach(function(r){if(r.usuario_id)iM[String(r.usuario_id)]=r;if(r.instagram_handle)iM[r.instagram_handle.replace('@','')]=r;});filtHuman=allHumanFull.filter(function(r){var raw=String(r.telefone||'').replace(/\D/g,'');var isIG=raw.length>=15;var lead=isIG?(iM[raw]||{}):(wM[raw]||{});return(r.telefone||'').indexOf(q)>=0||(lead.nome||'').toLowerCase().indexOf(q)>=0||(lead.instagram_handle||'').toLowerCase().indexOf(q)>=0;});renderTbHuman();}
-function renderTbHuman(){var tb=document.getElementById('tb-human');if(!filtHuman.length){tb.innerHTML='<tr><td colspan="7" class="empty">Nenhum registro</td></tr>';return;}var wM={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wM[r.telefone.replace(/\D/g,'')]=r;if(r.usuario_id)wM[String(r.usuario_id).replace(/\D/g,'')]=r;});var iM={};(window._igLeads||[]).forEach(function(r){if(r.usuario_id)iM[String(r.usuario_id)]=r;if(r.instagram_handle)iM[r.instagram_handle.replace('@','')]=r;});tb.innerHTML=filtHuman.map(function(r,i){var dt=r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):'—';var ago=r.bloqueado_em?timeAgo(new Date(r.bloqueado_em)):'—';var raw=String(r.telefone||'').replace(/\D/g,'');var isIG=raw.length>=15;var lead=isIG?(iM[raw]||{}):(wM[raw]||{});var nome=lead.nome||'—';var prod=normProd(lead.produto_interesse||'')||'—';var etapa=lead.etapa_funil||'—';var cBadge=isIG?'<span class="pill pp" style="font-size:10px;padding:2px 7px">IG</span>':'<span class="pill pb" style="font-size:10px;padding:2px 7px">WPP</span>';var contactHtml='';if(isIG){var hdl=lead.instagram_handle||'';if(!hdl){var igL=(window._igLeads||[]).find(function(g){return String(g.usuario_id)===raw;});if(igL)hdl=igL.instagram_handle||'';}contactHtml=hdl?'<a href="https://instagram.com/'+hdl.replace('@','')+'" target="_blank" style="color:var(--purple);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">@'+hdl.replace('@','')+'</a>':'<span style="color:var(--purple);font-size:11px;opacity:.8">IG:'+raw.slice(-6)+'</span>';}else{var t2=r.telefone||raw;contactHtml=t2?'<a href="https://wa.me/'+t2.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+t2+'</a>':'<span style="color:var(--text3)">—</span>';}return'<tr><td style="color:var(--text3);font-size:12px;font-weight:600">'+(i+1)+'</td><td>'+cBadge+'</td><td>'+contactHtml+'</td><td class="tnm">'+nome+'</td><td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td><td><span class="pill pz">'+etapa+'</span></td><td class="tdt" title="'+dt+'">'+ago+'</td></tr>';}).join('');}
+async function loadHuman(){
+  clrErr('human');
+  try{
+    var all=[],bs=1000,off=0;
+    while(true){
+      var chunk=await qry('bloqueios_ia','telefone,bloqueado_em','order=bloqueado_em.desc&limit='+bs+'&offset='+off);
+      if(!chunk||!chunk.length)break;
+      all=all.concat(chunk);
+      if(chunk.length<bs)break;
+      off+=bs;
+    }
+    window._bloqAll=all;
+    allHumanFull=all;
+    var cutoff=periodCutoff();
+    filtHuman=cutoff?all.filter(function(r){return r.bloqueado_em&&r.bloqueado_em>cutoff;}):all;
+    var hb=document.getElementById('badge-human');
+    if(hb){hb.style.display=all.length?'':'none';hb.textContent=all.length;}
+    renderHumanKPIs(all,filtHuman);
+    renderHumanCharts(all);
+    updateHumanRecCounts();
+    var el=document.getElementById('bc-human');if(el)el.textContent=filtHuman.length+' registros';
+    renderTbHuman();
+  }catch(e){showErr('human',e.message);}
+}
+var humanRecHours = 0;
+var humanCanal = 'all';
+
+function setHumanRec(h){
+  humanRecHours=h;
+  document.querySelectorAll('#rec-human-tabs .rec-tab').forEach(function(b){b.classList.remove('on');});
+  var idx=[0,1,6,24,168].indexOf(h);
+  var btns=document.querySelectorAll('#rec-human-tabs .rec-tab');
+  if(btns[idx])btns[idx].classList.add('on');
+  applyHumanFilters();
+}
+
+function setHumanCanal(c){
+  humanCanal=c;
+  ['all','wpp','ig'].forEach(function(x){
+    var el=document.getElementById('hcf-'+x);
+    if(el)el.classList.toggle('on',x===c);
+  });
+  applyHumanFilters();
+}
+
+function applyHumanFilters(){
+  var base=allHumanFull;
+  // Period
+  var cutoff=periodCutoff();
+  if(cutoff)base=base.filter(function(r){return r.bloqueado_em&&r.bloqueado_em>cutoff;});
+  // Recency
+  if(humanRecHours){var rc=new Date(Date.now()-humanRecHours*3600000).toISOString();base=base.filter(function(r){return r.bloqueado_em&&r.bloqueado_em>rc;});}
+  // Canal
+  if(humanCanal!=='all'){
+    base=base.filter(function(r){
+      var raw=String(r.telefone||'').replace(/\D/g,'');
+      var isIG=raw.length>=15;
+      return humanCanal==='ig'?isIG:!isIG;
+    });
+  }
+  // Search
+  var q=document.getElementById('si-human');
+  if(q&&q.value.trim()){
+    var qv=q.value.toLowerCase();
+    var wM={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wM[r.telefone.replace(/\D/g,'')]=r;if(r.usuario_id)wM[String(r.usuario_id).replace(/\D/g,'')]=r;});
+    var iM={};(window._igLeads||[]).forEach(function(r){if(r.usuario_id)iM[String(r.usuario_id)]=r;if(r.instagram_handle)iM[r.instagram_handle.replace('@','')]=r;});
+    base=base.filter(function(r){
+      var raw=String(r.telefone||'').replace(/\D/g,'');
+      var isIG=raw.length>=15;
+      var lead=isIG?(iM[raw]||{}):(wM[raw]||{});
+      return(r.telefone||'').indexOf(qv)>=0||(lead.nome||'').toLowerCase().indexOf(qv)>=0||(lead.instagram_handle||'').toLowerCase().indexOf(qv)>=0;
+    });
+  }
+  filtHuman=base;
+  var el=document.getElementById('bc-human');if(el)el.textContent=filtHuman.length+' registros';
+  renderTbHuman();
+}
+
+function updateHumanRecCounts(){
+  [0,1,6,24,168].forEach(function(h,i){
+    var el=document.getElementById('hrc-'+h);
+    if(!el)return;
+    var n=h===0?allHumanFull.length:allHumanFull.filter(function(r){return r.bloqueado_em&&r.bloqueado_em>new Date(Date.now()-h*3600000).toISOString();}).length;
+    el.textContent=n?' ('+n+')':'';
+  });
+}
+
+function renderHumanKPIs(all,filt){
+  var today=new Date().toISOString().slice(0,10);
+  var hoje=all.filter(function(r){return(r.bloqueado_em||'').slice(0,10)===today;}).length;
+  var wppCount=all.filter(function(r){return String(r.telefone||'').replace(/\D/g,'').length<15;}).length;
+  var igCount=all.length-wppCount;
+  var el;
+  el=document.getElementById('h-total');if(el)el.textContent=all.length.toLocaleString('pt-BR');
+  el=document.getElementById('h-hoje');if(el)el.textContent=hoje.toLocaleString('pt-BR');
+  el=document.getElementById('h-wpp');if(el)el.textContent=wppCount.toLocaleString('pt-BR');
+  el=document.getElementById('h-ig');if(el)el.textContent=igCount.toLocaleString('pt-BR');
+}
+
+function renderHumanCharts(all){
+  // By hour
+  var hourData=Array(24).fill(0);
+  all.forEach(function(r){if(r.bloqueado_em)hourData[new Date(r.bloqueado_em).getHours()]++;});
+  mk('cHumanHour',{type:'bar',data:{labels:Array.from({length:24},function(_,i){return(i<10?'0':'')+i+'h';}),datasets:[{data:hourData,backgroundColor:hourData.map(function(v){var mx=Math.max.apply(null,hourData)||1;return'rgba(239,71,111,'+(0.15+v/mx*0.7)+')';}),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:TICK(),font:{size:10}},grid:{color:GRID()},border:{display:false}},x:{ticks:{color:TICK(),font:{size:9},maxRotation:0},grid:{display:false},border:{display:false}}}}});
+  // By product
+  var wM={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wM[r.telefone.replace(/\D/g,'')]=r;if(r.usuario_id)wM[String(r.usuario_id).replace(/\D/g,'')]=r;});
+  var pm={};
+  all.forEach(function(r){
+    var raw=String(r.telefone||'').replace(/\D/g,'');
+    var lead=wM[raw]||{};
+    var p=normProd(lead.produto_interesse||'');
+    if(p)pm[p]=(pm[p]||0)+1;
+  });
+  var pe=Object.entries(pm).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var tot=pe.reduce(function(s,x){return s+x[1];},0);
+  var el=document.getElementById('h-prod-total');if(el)el.textContent=tot+' mapeadas';
+  mk('cHumanProd',{type:'bar',data:{labels:pe.map(function(x){return x[0];}),datasets:[{data:pe.map(function(x){return x[1];}),backgroundColor:pe.map(function(_,i){return CHART_COLORS[i%10]+'99';}),borderColor:pe.map(function(_,i){return CHART_COLORS[i%10];}),borderWidth:1.5,borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TICK(),font:{size:10}},grid:{color:GRID()},border:{display:false}},y:{ticks:{color:TICK(),font:{size:10}},grid:{display:false},border:{display:false}}}}});
+}
+
+function filterHuman(){applyHumanFilters();}
+
+function _oldFilterHuman(){var q=document.getElementById('si-human').value.toLowerCase();var wM={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wM[r.telefone.replace(/\D/g,'')]=r;if(r.usuario_id)wM[String(r.usuario_id).replace(/\D/g,'')]=r;});var iM={};(window._igLeads||[]).forEach(function(r){if(r.usuario_id)iM[String(r.usuario_id)]=r;if(r.instagram_handle)iM[r.instagram_handle.replace('@','')]=r;});filtHuman=allHumanFull.filter(function(r){var raw=String(r.telefone||'').replace(/\D/g,'');var isIG=raw.length>=15;var lead=isIG?(iM[raw]||{}):(wM[raw]||{});return(r.telefone||'').indexOf(q)>=0||(lead.nome||'').toLowerCase().indexOf(q)>=0||(lead.instagram_handle||'').toLowerCase().indexOf(q)>=0;});renderTbHuman();}
+function renderTbHuman(){
+  var tb=document.getElementById('tb-human');
+  if(!filtHuman.length){tb.innerHTML='<tr><td colspan="9" class="empty">Nenhum registro</td></tr>';return;}
+  var wM={};(window._wppLeads||[]).forEach(function(r){if(r.telefone)wM[r.telefone.replace(/\D/g,'')]=r;if(r.usuario_id)wM[String(r.usuario_id).replace(/\D/g,'')]=r;});
+  var iM={};(window._igLeads||[]).forEach(function(r){if(r.usuario_id)iM[String(r.usuario_id)]=r;if(r.instagram_handle)iM[r.instagram_handle.replace('@','')]=r;});
+  tb.innerHTML=filtHuman.map(function(r,i){
+    var dt=r.bloqueado_em?new Date(r.bloqueado_em).toLocaleString('pt-BR'):'—';
+    var ago=r.bloqueado_em?timeAgo(new Date(r.bloqueado_em)):'—';
+    var raw=String(r.telefone||'').replace(/\D/g,'');
+    var isIG=raw.length>=15;
+    var lead=isIG?(iM[raw]||{}):(wM[raw]||{});
+    var nome=lead.nome||'—';
+    var prod=normProd(lead.produto_interesse||'')||'—';
+    var etapa=lead.etapa_funil||'—';
+    var sc=leadScore(lead,isIG?'ig':'wpp');
+    var cBadge=isIG?'<span class="pill pp" style="font-size:10px;padding:2px 7px">IG</span>':'<span class="pill pb" style="font-size:10px;padding:2px 7px">WPP</span>';
+    var contactHtml='';
+    var tel='';
+    if(isIG){
+      var hdl=lead.instagram_handle||'';
+      if(!hdl){var igL=(window._igLeads||[]).find(function(g){return String(g.usuario_id)===raw;});if(igL)hdl=igL.instagram_handle||'';}
+      contactHtml=hdl?'<a href="https://instagram.com/'+hdl.replace('@','')+'" target="_blank" style="color:var(--purple);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">@'+hdl.replace('@','')+'</a>':'<span style="color:var(--purple);font-size:11px;opacity:.8">IG:'+raw.slice(-6)+'</span>';
+      tel=lead.telefone||'';
+    }else{
+      var t2=r.telefone||raw;tel=t2;
+      contactHtml=t2?'<a href="https://wa.me/'+t2.replace(/\D/g,'')+'" target="_blank" style="color:var(--green);font-family:monospace;font-size:12px;font-weight:600;text-decoration:none;">'+t2+'</a>':'<span style="color:var(--text3)">—</span>';
+    }
+    var actions='';
+    if(tel)actions+='<a href="https://wa.me/'+tel.replace(/\D/g,'')+'" target="_blank" class="btn-gl btn-gl-green" style="text-decoration:none;padding:4px 8px;font-size:11px;" title="WhatsApp">WPP</a>';
+    if(lead.instagram_handle)actions+='<a href="https://instagram.com/'+lead.instagram_handle.replace('@','')+'" target="_blank" class="btn-gl" style="text-decoration:none;padding:4px 8px;font-size:11px;" title="Instagram">IG</a>';
+    if(Object.keys(lead).length>0){
+      var type=isIG?'ig':'wpp';
+      var rj=JSON.stringify(lead).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      actions+='<button class="btn-gl" style="padding:4px 8px;font-size:11px;" onclick="openLeadModal(\''+type+'\','+rj+')" title="Ver conversa">Ver</button>';
+    }
+    return'<tr>'+
+      '<td style="color:var(--text3);font-size:12px;font-weight:600">'+(i+1)+'</td>'+
+      '<td>'+cBadge+'</td>'+
+      '<td>'+contactHtml+'</td>'+
+      '<td class="tnm">'+escHtml(nome)+'</td>'+
+      '<td><span class="pill '+pillCls(prod)+'">'+prod+'</span></td>'+
+      '<td><span class="pill pz">'+etapa+'</span></td>'+
+      '<td>'+scoreBadge(sc)+'</td>'+
+      '<td class="tdt" title="'+dt+'">'+ago+'</td>'+
+      '<td style="white-space:nowrap"><div style="display:flex;gap:3px;">'+actions+'</div></td>'+
+      '</tr>';
+  }).join('');
+}
 
 /* ── PAGINATION ── */
 function renderPag(id,total,cur,cb){var pages=Math.ceil(total/PER);var el=document.getElementById(id);if(!el)return;if(pages<=1){el.innerHTML='';return;}var s=(cur-1)*PER+1,e2=Math.min(cur*PER,total);var btns='';if(cur>1)btns+='<button class="pag-btn" onclick="('+cb.toString()+')'+'('+(cur-1)+')">‹</button>';var rng=[];for(var i=Math.max(1,cur-2);i<=Math.min(pages,cur+2);i++)rng.push(i);if(rng[0]>1){btns+='<button class="pag-btn" onclick="('+cb.toString()+')'+'(1)">1</button>';if(rng[0]>2)btns+='<span style="color:var(--text3);padding:0 4px">…</span>';}rng.forEach(function(p){btns+='<button class="pag-btn'+(p===cur?' on':'')+'" onclick="('+cb.toString()+')'+'('+p+')">'+p+'</button>';});if(rng[rng.length-1]<pages){if(rng[rng.length-1]<pages-1)btns+='<span style="color:var(--text3);padding:0 4px">…</span>';btns+='<button class="pag-btn" onclick="('+cb.toString()+')'+'('+pages+')">'+pages+'</button>';}if(cur<pages)btns+='<button class="pag-btn" onclick="('+cb.toString()+')'+'('+(cur+1)+')">›</button>';el.innerHTML='<span class="pag-info">'+s+'–'+e2+' de '+total+'</span><div class="pag-btns">'+btns+'</div>';}
