@@ -1225,12 +1225,25 @@ async function loadAnalytics(){
   clrErr('analytics');
   var tb=document.getElementById('tb-time');if(tb)tb.textContent='Atualizando...';
   try{
+    // Paginated fetch — no row limit
+    async function fetchAll(table, select, extra) {
+      var all=[], batchSize=1000, offset=0;
+      while(true) {
+        var sep = extra ? '&' : '';
+        var chunk = await qry(table, select, (extra||'')+(extra?'&':'')+'limit='+batchSize+'&offset='+offset);
+        if(!chunk||!chunk.length) break;
+        all = all.concat(chunk);
+        if(chunk.length < batchSize) break;
+        offset += batchSize;
+      }
+      return all;
+    }
     var r=await Promise.all([
-      qry('conversas_whatsapp','etapa_funil,produto_interesse,atualizado_em'),
-      qry('conversas','etapa_funil,produto_interesse,atualizado_em,last_response_at'),
-      qry('bloqueios_ia','telefone,bloqueado_em','order=bloqueado_em.desc&limit=1000'),
-      qry('conversas_whatsapp','telefone,nome,usuario_id,produto_interesse,etapa_funil,contato,mensagens,atualizado_em','order=atualizado_em.desc'),
-      qry('conversas','instagram_handle,nome,usuario_id,produto_interesse,etapa_funil,telefone,contato,instagram,last_response_at,mensagens,atualizado_em','order=atualizado_em.desc'),
+      fetchAll('conversas_whatsapp','etapa_funil,produto_interesse,atualizado_em','order=atualizado_em.desc'),
+      fetchAll('conversas','etapa_funil,produto_interesse,atualizado_em,last_response_at','order=atualizado_em.desc'),
+      fetchAll('bloqueios_ia','telefone,bloqueado_em','order=bloqueado_em.desc'),
+      fetchAll('conversas_whatsapp','telefone,nome,usuario_id,produto_interesse,etapa_funil,contato,mensagens,atualizado_em','order=atualizado_em.desc'),
+      fetchAll('conversas','instagram_handle,nome,usuario_id,produto_interesse,etapa_funil,telefone,contato,instagram,last_response_at,mensagens,atualizado_em','order=atualizado_em.desc'),
     ]);
     window._wppAll=r[0]; window._igAll=r[1]; window._bloqAll=r[2];
     window._wppLeads=r[3];
