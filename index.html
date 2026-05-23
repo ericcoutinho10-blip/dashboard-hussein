@@ -8,19 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ===== ESTILOS COMPLETOS (mesmo do original, sem erros) ===== */
-:root {
-  --blue:#4361ee; --blue2:#2563eb; --blueg:rgba(67,97,238,.14);
-  --purple:#7c3aed; --purpleg:rgba(124,58,237,.14);
-  --green:#06d6a0; --greeng:rgba(6,214,160,.14);
-  --red:#ef476f; --redg:rgba(239,71,111,.12);
-  --orange:#ff9f1c; --orangeg:rgba(255,159,28,.12);
-  --cyan:#06b6d4; --cyang:rgba(6,182,212,.12);
-  --yellow:#fbbf24; --yellowg:rgba(251,191,36,.12);
-  --pink:#ec4899; --pinkg:rgba(236,72,153,.12);
-  --teal:#14b8a6; --tealg:rgba(20,184,166,.12);
-  --font:'Inter',sans-serif;
-}
+/* ── THEMES ── */
 [data-theme="light"] {
   --bg: #e8eaf2;
   --bg2: rgba(255,255,255,0.65);
@@ -67,92 +55,347 @@
   --orb4: rgba(236,72,153,0.1);
   --scene-bg: linear-gradient(145deg,#080c18 0%,#0d1428 40%,#0a1020 100%);
 }
+:root {
+  --blue:#4361ee; --blue2:#2563eb; --blueg:rgba(67,97,238,.14);
+  --purple:#7c3aed; --purpleg:rgba(124,58,237,.14);
+  --green:#06d6a0; --greeng:rgba(6,214,160,.14);
+  --red:#ef476f; --redg:rgba(239,71,111,.12);
+  --orange:#ff9f1c; --orangeg:rgba(255,159,28,.12);
+  --cyan:#06b6d4; --cyang:rgba(6,182,212,.12);
+  --yellow:#fbbf24; --yellowg:rgba(251,191,36,.12);
+  --pink:#ec4899; --pinkg:rgba(236,72,153,.12);
+  --teal:#14b8a6; --tealg:rgba(20,184,166,.12);
+  --font:'Inter',sans-serif;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
-.bg-scene{position:fixed;inset:0;z-index:0;background:var(--scene-bg);overflow:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(80,90,160,0.2);border-radius:99px;}
+
+/* ── BACKGROUND ── */
+.bg-scene{position:fixed;inset:0;z-index:0;background:var(--scene-bg);overflow:hidden;transition:background .4s;}
 .bg-orb{position:absolute;border-radius:50%;filter:blur(70px);animation:orbDrift linear infinite;}
 @keyframes orbDrift{0%{transform:translate(0,0) scale(1);}33%{transform:translate(35px,-25px) scale(1.06);}66%{transform:translate(-18px,28px) scale(0.96);}100%{transform:translate(0,0) scale(1);}}
 .bg-orb.o1{width:550px;height:550px;background:var(--orb1);top:-15%;left:-10%;animation-duration:24s;}
 .bg-orb.o2{width:420px;height:420px;background:var(--orb2);top:25%;right:-12%;animation-duration:31s;}
 .bg-orb.o3{width:360px;height:360px;background:var(--orb3);bottom:-5%;left:22%;animation-duration:19s;}
 .bg-orb.o4{width:290px;height:290px;background:var(--orb4);top:58%;right:22%;animation-duration:26s;}
-.lg{background:var(--card);backdrop-filter:blur(24px) saturate(1.8);border:1.5px solid var(--border);box-shadow:0 8px 32px var(--sh),0 2px 8px var(--sh2),inset 0 1.5px 0 var(--inset);}
+
+/* ── GLASS ── */
+.lg{background:var(--card);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);border:1.5px solid var(--border);box-shadow:0 8px 32px var(--sh),0 2px 8px var(--sh2),inset 0 1.5px 0 var(--inset);}
+
+/* ── LOGIN ── */
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;z-index:10;}
 .lw{display:grid;grid-template-columns:1fr 1fr;max-width:860px;width:calc(100% - 2rem);border-radius:28px;overflow:hidden;box-shadow:0 40px 80px rgba(80,90,200,0.2),0 0 0 1.5px rgba(255,255,255,0.85);}
 .ll{background:linear-gradient(145deg,rgba(67,97,238,0.92),rgba(124,58,237,0.92));backdrop-filter:blur(20px);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.ll::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,0.07);top:-80px;right:-60px;}
+.ll::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.05);bottom:-40px;left:-40px;}
 .ll-logo{display:flex;align-items:center;gap:10px;position:relative;z-index:1;}
 .ll-lb{width:38px;height:38px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:11px;display:flex;align-items:center;justify-content:center;}
 .ll-ln{font-size:15px;font-weight:700;color:#fff;}
 .ll-body{position:relative;z-index:1;padding:1.5rem 0 1rem;}
 .ll-h{font-size:26px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:10px;letter-spacing:-0.5px;}
 .ll-s{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7;}
+.ll-dots{display:flex;gap:6px;position:relative;z-index:1;}
+.ll-d{height:4px;border-radius:99px;background:rgba(255,255,255,0.25);}
+.ll-d:first-child{width:22px;background:#fff;}
+.ll-d:not(:first-child){width:8px;}
 .lr{background:var(--card);backdrop-filter:blur(32px);padding:3rem;display:flex;flex-direction:column;justify-content:center;}
-.lr-h{font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.lr-h{font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.4px;}
 .lr-s{font-size:13px;color:var(--text3);margin-bottom:2rem;}
 .fg{margin-bottom:1rem;}
 .fl{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:0.05em;}
-.fi{width:100%;padding:12px 16px;background:var(--inp);border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:all .2s;}
+.fi{width:100%;padding:12px 16px;background:var(--inp);border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:all .2s;box-shadow:inset 0 2px 6px var(--sh2);}
 .fi:focus{border-color:var(--blue);background:var(--bg4);box-shadow:0 0 0 4px var(--blueg);}
-.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,#4361ee,#7c3aed);border:none;border-radius:14px;color:#fff;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:.5rem;transition:all .2s;box-shadow:0 6px 20px rgba(67,97,238,0.35);}
-.btn-login:hover{transform:translateY(-1px);}
-.btn-login:disabled{opacity:.55;cursor:not-allowed;}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,#4361ee,#7c3aed);border:none;border-radius:14px;color:#fff;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:.5rem;transition:all .2s;box-shadow:0 6px 20px rgba(67,97,238,0.35),inset 0 1px 0 rgba(255,255,255,0.2);}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(67,97,238,0.4),inset 0 1px 0 rgba(255,255,255,0.2);}
+.btn-login:disabled{opacity:.55;cursor:not-allowed;transform:none;}
 .lerr{background:var(--redg);border:1px solid rgba(239,71,111,.25);border-radius:10px;padding:10px 14px;color:var(--red);font-size:13px;margin-bottom:1rem;display:none;}
 @media(max-width:640px){.lw{grid-template-columns:1fr;}.ll{display:none;}}
+
+/* ── SHELL ── */
 #dash{display:none;position:relative;z-index:1;}
 .shell{display:flex;min-height:100vh;}
-.sb{width:230px;background:var(--sb-bg);backdrop-filter:blur(32px) saturate(2);border-right:1.5px solid var(--border);box-shadow:2px 0 24px var(--sh2);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+
+/* ── SIDEBAR ── */
+.sb{width:230px;background:var(--sb-bg);backdrop-filter:blur(32px) saturate(2);-webkit-backdrop-filter:blur(32px) saturate(2);border-right:1.5px solid var(--border);box-shadow:2px 0 24px var(--sh2);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:background .3s;}
 .sb-top{padding:1.375rem 1.25rem 1rem;border-bottom:1.5px solid var(--border2);display:flex;align-items:center;gap:10px;}
-.sb-lb{width:36px;height:36px;background:linear-gradient(135deg,#4361ee,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;}
-.sb-tn{font-size:12px;font-weight:700;color:var(--text);}
+.sb-lb{width:36px;height:36px;background:linear-gradient(135deg,#4361ee,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(67,97,238,0.4);}
+.sb-tn{font-size:12px;font-weight:700;color:var(--text);line-height:1.25;}
 .sb-ts{font-size:10px;color:var(--text3);}
 .sb-nav{padding:.875rem .75rem;flex:1;overflow-y:auto;}
 .sb-gl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding:0 8px;margin:1rem 0 .3rem;}
-.sb-a{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .18s;width:100%;text-align:left;background:transparent;border:none;font-family:var(--font);}
-.sb-a:hover{background:var(--bg4);color:var(--text);}
-.sb-a.on{background:var(--blueg);color:var(--blue);}
+.sb-a{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all .18s;text-decoration:none;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;font-family:var(--font);}
+.sb-a:hover{background:var(--bg4);color:var(--text);box-shadow:0 2px 8px var(--sh2);}
+.sb-a.on{background:var(--blueg);color:var(--blue);border:1px solid rgba(67,97,238,.18);box-shadow:0 2px 8px rgba(67,97,238,.1);}
+.sb-a svg{flex-shrink:0;opacity:.65;}
+.sb-a.on svg,.sb-a:hover svg{opacity:1;}
 .sb-bot{padding:1rem 1.25rem;border-top:1.5px solid var(--border2);}
 .sb-st{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);margin-bottom:9px;}
-.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(6,214,160,.2);animation:pulse 2.5s infinite;}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(6,214,160,.2);animation:pulse 2.5s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(6,214,160,.2);}50%{box-shadow:0 0 0 7px rgba(6,214,160,.06);}}
 .sb-usr{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.sb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.sb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 3px 10px rgba(67,97,238,.3);}
 .sb-un{font-size:12px;font-weight:600;color:var(--text);}
 .sb-ue{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
 .sb-btns{display:flex;gap:6px;}
-.sbb{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);}
+.sbb{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .18s;box-shadow:0 2px 6px var(--sh2);}
 .sbb:hover{background:var(--bg4);color:var(--text);}
 .sbb-out{border-color:rgba(239,71,111,.2);background:var(--redg);color:var(--red);}
+.sbb-out:hover{background:rgba(239,71,111,.18);}
+
+/* ── MAIN ── */
 .main{margin-left:230px;flex:1;display:flex;flex-direction:column;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--top-bg);backdrop-filter:blur(24px);border-bottom:1.5px solid var(--border2);position:sticky;top:0;z-index:50;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--top-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1.5px solid var(--border2);box-shadow:0 2px 12px var(--sh2);position:sticky;top:0;z-index:50;transition:background .3s;}
 .tb-l{display:flex;align-items:center;gap:.875rem;}
-.tb-title{font-size:16px;font-weight:800;color:var(--text);}
-.tb-sub{font-size:12px;color:var(--text3);background:var(--bg3);padding:4px 12px;border-radius:99px;}
+.tb-title{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.3px;}
+.tb-sub{font-size:12px;color:var(--text3);background:var(--bg3);padding:4px 12px;border-radius:99px;border:1.5px solid var(--border);box-shadow:0 2px 6px var(--sh2);}
 .tb-r{display:flex;align-items:center;gap:10px;}
 .tb-time{font-size:12px;color:var(--text3);}
-.th-tog{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1.5px solid var(--border);border-radius:99px;padding:6px 14px;cursor:pointer;}
-.th-tog-track{width:30px;height:17px;border-radius:99px;background:rgba(67,97,238,.25);position:relative;border:1px solid var(--border);}
-.th-tog-thumb{width:13px;height:13px;background:white;border-radius:50%;position:absolute;top:1px;left:1px;transition:left .25s;}
+
+/* THEME TOGGLE */
+.th-tog{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1.5px solid var(--border);border-radius:99px;padding:6px 14px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px var(--sh2);}
+.th-tog:hover{background:var(--bg4);}
+.th-tog-sun{font-size:13px;}
+.th-tog-track{width:30px;height:17px;border-radius:99px;background:rgba(67,97,238,.25);position:relative;flex-shrink:0;transition:background .25s;border:1px solid var(--border);}
+.th-tog-thumb{width:13px;height:13px;background:white;border-radius:50%;position:absolute;top:1px;left:1px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
 [data-theme="dark"] .th-tog-track{background:rgba(67,97,238,.7);}
 [data-theme="dark"] .th-tog-thumb{left:15px;}
 .th-tog-lbl{font-size:11px;font-weight:600;color:var(--text2);min-width:34px;}
+
+/* BTN */
+.btn-gl{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .18s;box-shadow:0 3px 10px var(--sh2),inset 0 1px 0 var(--inset);}
+.btn-gl:hover{background:var(--bg4);color:var(--text);transform:translateY(-1px);}
+.btn-gl:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-gl-blue{background:var(--blueg);border-color:rgba(67,97,238,.25);color:var(--blue);}
+.btn-gl-blue:hover{background:rgba(67,97,238,.2);}
+.btn-gl-green{background:var(--greeng);border-color:rgba(6,214,160,.25);color:var(--green);}
+.btn-gl-green:hover{background:rgba(6,214,160,.2);}
+
+/* PAGES */
 .page{display:none;padding:1.75rem 2rem 3rem;animation:pgIn .3s ease;}
 .page.active{display:block;}
 @keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .err-b{background:var(--redg);border:1px solid rgba(239,71,111,.25);border-radius:12px;padding:10px 16px;color:var(--red);font-size:13px;margin-bottom:1.25rem;display:none;}
-.card{background:var(--card);backdrop-filter:blur(28px);border:1.5px solid var(--border);border-radius:20px;padding:1.375rem 1.5rem;margin-bottom:16px;box-shadow:0 6px 24px var(--sh);}
-.empty{text-align:center;color:var(--text3);padding:2rem;}
-/* Outros estilos resumidos para manter funcionalidade - o importante é o login funcionar */
+.ok-b{background:var(--greeng);border:1px solid rgba(6,214,160,.25);border-radius:12px;padding:10px 16px;color:var(--green);font-size:13px;margin-bottom:1.25rem;display:none;}
+.pg-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem;}
+.pg-title{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px;}
+.pg-sub{font-size:13px;color:var(--text3);margin-top:3px;}
+
+/* ── METRIC CARDS ── */
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:1.75rem;}
+.mc{background:var(--card);backdrop-filter:blur(28px) saturate(2);-webkit-backdrop-filter:blur(28px) saturate(2);border:1.5px solid var(--border);border-radius:20px;padding:1.375rem;position:relative;overflow:hidden;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;cursor:default;box-shadow:0 6px 24px var(--sh),0 2px 8px var(--sh2),inset 0 1.5px 0 var(--inset);}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);}
+.mc:hover{transform:translateY(-4px);box-shadow:0 16px 48px var(--sh),0 4px 16px var(--sh2);}
+.mc-accent{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 20px 20px;}
+.mc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.mc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 2px 8px var(--sh2);}
+.mc-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.03em;border:1px solid rgba(255,255,255,.5);}
+.mc-val{font-size:32px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;letter-spacing:-1px;}
+.mc-lbl{font-size:12px;color:var(--text3);font-weight:500;}
+.mc-spark{margin-top:14px;height:44px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+
+/* ── GLASS CARD ── */
+.card{background:var(--card);backdrop-filter:blur(28px) saturate(2);-webkit-backdrop-filter:blur(28px) saturate(2);border:1.5px solid var(--border);border-radius:20px;padding:1.375rem 1.5rem;margin-bottom:16px;box-shadow:0 6px 24px var(--sh),0 2px 8px var(--sh2),inset 0 1.5px 0 var(--inset);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);}
+.card:last-child{margin-bottom:0;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.ct{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.1px;}
+.cb{font-size:11px;padding:3px 10px;border-radius:99px;background:var(--blueg);color:var(--blue);font-weight:600;border:1px solid rgba(67,97,238,.2);}
+.cw{position:relative;width:100%;}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-weight:500;}
+.ls{width:8px;height:8px;border-radius:3px;flex-shrink:0;}
+
+/* ── PRODUCT CARDS ── */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:16px;margin-bottom:1.75rem;}
+.pc{background:var(--card);backdrop-filter:blur(28px) saturate(2);-webkit-backdrop-filter:blur(28px) saturate(2);border:1.5px solid var(--border);border-radius:22px;overflow:hidden;cursor:pointer;position:relative;box-shadow:0 6px 24px var(--sh),inset 0 1.5px 0 var(--inset);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;z-index:1;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);}
+.pc:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 24px 60px var(--sh),inset 0 1.5px 0 var(--inset);}
+.pc:active{transform:scale(.96) translateY(0);transition:transform .1s;}
+.pc-img-wrap{width:100%;height:145px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.pc-img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease,filter .4s;}
+.pc:hover .pc-img{transform:scale(1.08);filter:brightness(1.08);}
+.pc-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.35) 0%,transparent 55%);}
+.pc-body{padding:1rem 1.125rem 1.25rem;}
+.pc-top2{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.pc-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;}
+.pc-val{font-size:24px;font-weight:800;color:var(--text);margin-bottom:2px;letter-spacing:-.5px;}
+.pc-sub{font-size:11px;color:var(--text3);}
+.pc-pct{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;border:1px solid rgba(255,255,255,.5);}
+.pc-bar-wrap{margin-top:10px;height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.pc-bar-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.34,1.56,.64,1);}
+.pc-tap-hint{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(67,97,238,.18),transparent);padding:10px 12px 8px;display:flex;align-items:center;justify-content:center;gap:5px;opacity:0;transition:opacity .25s;font-size:11px;font-weight:600;color:var(--blue);}
+.pc:hover .pc-tap-hint{opacity:1;}
+
+/* ── PRODUCT DETAIL PAGE ── */
+#page-produto-detail{display:none;padding:0;animation:pgIn .35s cubic-bezier(.34,1.56,.64,1);}
+#page-produto-detail.active{display:block;}
+.pd-header{
+  background:var(--card);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-bottom:1.5px solid var(--border);
+  padding:1.5rem 2rem;
+  display:flex;align-items:center;gap:1.25rem;
+  box-shadow:0 4px 20px var(--sh2);
+  position:relative;overflow:hidden;
+}
+.pd-header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);}
+.pd-icon{width:72px;height:72px;border-radius:18px;overflow:hidden;flex-shrink:0;box-shadow:0 8px 24px var(--sh);border:1.5px solid var(--border);}
+.pd-icon img{width:100%;height:100%;object-fit:cover;}
+.pd-info .pd-name{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px;}
+.pd-info .pd-desc{font-size:13px;color:var(--text3);margin-top:3px;}
+.pd-info .pd-stats{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;}
+.pd-stat{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--text);}
+.pd-stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.pd-body{padding:1.75rem 2rem 3rem;}
+.pd-tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.pd-tab{padding:8px 18px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .18s;font-family:var(--font);}
+.pd-tab:hover{background:var(--bg4);color:var(--text);}
+.pd-tab.on{background:var(--blueg);border-color:rgba(67,97,238,.25);color:var(--blue);}
+.pd-tab-content{display:none;}
+.pd-tab-content.active{display:block;}
+
+/* TABLES */
+.tbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;}
+.tbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.srch{position:relative;}
+.srch svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none;}
+.srch input{padding:9px 14px 9px 34px;background:var(--inp);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;width:230px;transition:all .18s;box-shadow:0 2px 8px var(--sh2);}
+.srch input:focus{border-color:rgba(67,97,238,.4);background:var(--bg4);box-shadow:0 0 0 4px var(--blueg);}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:9px 14px;text-align:left;border-bottom:1.5px solid var(--border2);white-space:nowrap;}
+tbody tr{transition:background .1s;}
+tbody tr:hover{background:var(--bg4);}
+tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border2);vertical-align:middle;color:var(--text);}
+.tph{font-family:monospace;font-size:12px;color:var(--text2);}
+.tdt{color:var(--text3);font-size:11px;}
+.tnm{font-weight:600;}
+.thdl{color:var(--blue);font-family:monospace;font-size:12px;font-weight:600;}
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid rgba(255,255,255,.5);}
+.pb{background:var(--blueg);color:var(--blue);}
+.pp{background:var(--purpleg);color:var(--purple);}
+.pg{background:var(--greeng);color:var(--green);}
+.po{background:var(--orangeg);color:var(--orange);}
+.pr{background:var(--redg);color:var(--red);}
+.pc2{background:var(--cyang);color:var(--cyan);}
+.py{background:var(--yellowg);color:#92400e;}
+.ppk{background:var(--pinkg);color:var(--pink);}
+.pt{background:var(--tealg);color:var(--teal);}
+.pz{background:var(--bg3);color:var(--text2);}
+.empty{text-align:center;color:var(--text3);font-size:13px;padding:2.5rem;}
+.pag{display:flex;align-items:center;justify-content:space-between;padding:.875rem 0 0;flex-wrap:wrap;gap:8px;}
+.pag-info{font-size:12px;color:var(--text3);}
+.pag-btns{display:flex;gap:5px;}
+.pag-btn{padding:5px 11px;font-size:12px;cursor:pointer;font-family:var(--font);transition:all .15s;background:var(--bg3);color:var(--text2);border:1.5px solid var(--border);border-radius:8px;box-shadow:0 2px 6px var(--sh2);}
+.pag-btn:hover{background:var(--bg4);color:var(--text);}
+.pag-btn.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(67,97,238,.3);}
+
+/* SETTINGS */
+.form-section{margin-bottom:2rem;}
+.form-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1.5px solid var(--border2);letter-spacing:-.1px;}
+.theme-card{background:var(--card);backdrop-filter:blur(20px);border:1.5px solid var(--border);border-radius:18px;padding:1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;box-shadow:0 4px 16px var(--sh),inset 0 1px 0 var(--inset);}
+.ti-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.ti-sub{font-size:12px;color:var(--text3);}
+.toggle-wrap{display:flex;align-items:center;gap:10px;}
+.toggle{width:44px;height:24px;background:rgba(67,97,238,.25);border-radius:99px;position:relative;cursor:pointer;flex-shrink:0;border:1.5px solid var(--border);transition:background .25s;}
+[data-theme="dark"] .toggle{background:rgba(67,97,238,.7);}
+.toggle-thumb{width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:1px;left:1px;transition:left .25s;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+[data-theme="dark"] .toggle-thumb{left:23px;}
+.toggle-label{font-size:13px;color:var(--text2);min-width:42px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;}
+.form-input{padding:11px 14px;background:var(--inp);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:all .18s;box-shadow:inset 0 2px 6px var(--sh2);}
+.form-input:focus{border-color:rgba(67,97,238,.4);box-shadow:0 0 0 4px var(--blueg);}
+.form-input:disabled{opacity:.5;}
+.btn-save{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:linear-gradient(135deg,#4361ee,#7c3aed);border:none;border-radius:12px;color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:0 5px 18px rgba(67,97,238,.3),inset 0 1px 0 rgba(255,255,255,.2);}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(67,97,238,.35);}
+.profile-top{display:flex;align-items:center;gap:1.25rem;margin-bottom:2rem;padding:1.5rem;background:var(--card);backdrop-filter:blur(28px);border:1.5px solid var(--border);border-radius:20px;box-shadow:0 6px 24px var(--sh),inset 0 1.5px 0 var(--inset);}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 8px 24px rgba(67,97,238,.35);}
+.pi-name{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.4px;}
+.pi-email{font-size:13px;color:var(--text3);margin-top:3px;}
+.pi-role{font-size:11px;font-weight:700;color:var(--blue);background:var(--blueg);padding:3px 10px;border-radius:99px;display:inline-block;margin-top:6px;border:1px solid rgba(67,97,238,.2);}
+
+@media(max-width:1150px){.mgrid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){.g2{grid-template-columns:1fr;}}
+@media(max-width:768px){.sb{display:none;}.main{margin-left:0;}.page{padding:1rem;}.topbar{padding:.75rem 1rem;}.pd-header{padding:1rem;}.pd-body{padding:1rem 1rem 3rem;}.form-row{grid-template-columns:1fr;}}
+
+/* ── SCORE BADGE ── */
+.score-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+.score-5{background:rgba(6,214,160,.15);color:#06d6a0;border:1px solid rgba(6,214,160,.25);}
+.score-4{background:rgba(6,214,160,.09);color:#06d6a0;border:1px solid rgba(6,214,160,.18);}
+.score-3{background:rgba(251,191,36,.12);color:#b45309;border:1px solid rgba(251,191,36,.25);}
+.score-2{background:rgba(255,159,28,.1);color:#c2410c;border:1px solid rgba(255,159,28,.22);}
+.score-1,.score-0{background:rgba(239,71,111,.1);color:#ef476f;border:1px solid rgba(239,71,111,.2);}
+.rec-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.rec-tab{padding:5px 13px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s;font-family:var(--font);}
+.rec-tab:hover{background:var(--bg4);color:var(--text);}
+.rec-tab.on{background:var(--blueg);border-color:rgba(67,97,238,.28);color:var(--blue);}
+.rec-tab-count{font-size:10px;font-weight:600;opacity:.7;margin-left:3px;}
+.heatmap-wrap{overflow-x:auto;}
+.heatmap-table{border-collapse:collapse;font-size:11px;width:100%;}
+.heatmap-table th{padding:4px 6px;color:var(--text3);font-weight:600;text-align:center;white-space:nowrap;}
+.heatmap-table td{width:36px;height:26px;border-radius:4px;text-align:center;font-size:10px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;}
+.heatmap-table td:hover{transform:scale(1.3);z-index:2;position:relative;}
+.hm-day{color:var(--text2);font-weight:600;padding-right:8px;white-space:nowrap;text-align:right!important;cursor:default!important;}
+.hm-day:hover{transform:none!important;}
+.stat-tabs{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.stat-tab{padding:7px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .18s;font-family:var(--font);}
+.stat-tab:hover{background:var(--bg4);color:var(--text);}
+.stat-tab.on{background:var(--blueg);border-color:rgba(67,97,238,.25);color:var(--blue);}
+.stat-section{display:none;}.stat-section.active{display:block;}
+.funnel-wrap{display:flex;flex-direction:column;gap:6px;margin-top:.75rem;}
+.funnel-row{display:flex;align-items:center;gap:10px;}
+.funnel-bar-bg{flex:1;height:28px;background:var(--bg3);border-radius:8px;overflow:hidden;position:relative;}
+.funnel-bar-fill{height:100%;border-radius:8px;transition:width .7s cubic-bezier(.34,1.56,.64,1);}
+.funnel-bar-label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;}
+.funnel-bar-pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:var(--text2);}
+.funnel-arrow{font-size:16px;color:var(--text3);flex-shrink:0;line-height:1;}
+.funnel-conv{font-size:11px;font-weight:700;min-width:52px;text-align:right;}
+
+.cal-view-btn{padding:5px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:var(--font);transition:all .15s;}
+.cal-view-btn:hover{background:var(--bg4);color:var(--text);}
+.cal-view-btn.active{background:var(--card);color:var(--text);box-shadow:0 2px 8px var(--sh2);}
+.cal-sb-empty{text-align:center;color:var(--text3);font-size:13px;padding:2rem 1rem;line-height:1.6;}
+.cal-sb-item{padding:.5rem .75rem;border-radius:10px;border:1px solid var(--border2);margin-bottom:4px;cursor:pointer;transition:all .15s;}
+.cal-sb-item:hover{background:var(--bg3);border-color:var(--border);}
+.cal-sb-item-top{display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.cal-sb-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.cal-sb-canal{font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;flex-shrink:0;}
+.cal-sb-canal.wpp{background:rgba(67,97,238,.12);color:var(--blue);}
+.cal-sb-canal.ig{background:rgba(124,58,237,.12);color:var(--purple);}
+.cal-sb-canal.human{background:rgba(239,71,111,.1);color:var(--red);}
+.cal-sb-prod{font-size:11px;color:var(--text3);margin-top:1px;}
+.cal-sb-time{font-size:10px;color:var(--text3);margin-top:2px;font-weight:500;}
 </style>
 </head>
 <body>
-<div class="bg-scene"><div class="bg-orb o1"></div><div class="bg-orb o2"></div><div class="bg-orb o3"></div><div class="bg-orb o4"></div></div>
 
-<!-- TELA DE LOGIN -->
+<div class="bg-scene">
+  <div class="bg-orb o1"></div>
+  <div class="bg-orb o2"></div>
+  <div class="bg-orb o3"></div>
+  <div class="bg-orb o4"></div>
+</div>
+
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="lw">
     <div class="ll">
-      <div class="ll-logo"><div class="ll-lb"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div><span class="ll-ln">Suporte Equipe Awada</span></div>
-      <div class="ll-body"><div class="ll-h">IA Automação<br>em tempo real</div><div class="ll-s">Visualize dados do WhatsApp e Instagram com análises interativas em tempo real.</div></div>
+      <div class="ll-logo">
+        <div class="ll-lb"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
+        <span class="ll-ln">Suporte Equipe Awada</span>
+      </div>
+      <div class="ll-body">
+        <div class="ll-h">IA Automação<br>em tempo real</div>
+        <div class="ll-s">Visualize dados do WhatsApp e Instagram com análises interativas em tempo real.</div>
+      </div>
       <div class="ll-dots"><div class="ll-d"></div><div class="ll-d"></div><div class="ll-d"></div></div>
     </div>
     <div class="lr">
@@ -161,167 +404,429 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="lerr" id="lerr"></div>
       <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="le" placeholder="seu@email.com"/></div>
       <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lp" placeholder="••••••••"/></div>
-      <button class="btn-login" id="btn-login">Entrar no Sistema</button>
+      <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar no Sistema</button>
     </div>
   </div>
 </div>
 
-<!-- DASHBOARD (versão simplificada mas funcional) -->
+<!-- DASHBOARD -->
 <div id="dash">
 <div class="shell">
-  <aside class="sb">
-    <div class="sb-top"><div class="sb-lb"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div><div><div class="sb-tn">Suporte Equipe Awada</div><div class="sb-ts">Dashboard IA</div></div></div>
-    <nav class="sb-nav">
-      <div class="sb-gl">Principal</div>
-      <button class="sb-a on" onclick="goPage('analytics')">📊 Analítica</button>
-      <div class="sb-gl">Conta</div>
-      <button class="sb-a" onclick="goPage('config')">⚙️ Configurações</button>
-      <button class="sb-a" onclick="goPage('perfil')">👤 Meu Perfil</button>
-    </nav>
-    <div class="sb-bot">
-      <div class="sb-st"><span class="sb-dot"></span>Sistema ativo</div>
-      <div class="sb-usr"><div class="sb-av" id="sb-av">U</div><div><div class="sb-un" id="sb-nm">Usuário</div><div class="sb-ue" id="sb-em">—</div></div></div>
-      <div class="sb-btns"><button class="sbb sbb-out" onclick="doLogout()">Sair</button></div>
+<aside class="sb">
+  <div class="sb-top">
+    <div class="sb-lb"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
+    <div><div class="sb-tn">Suporte Equipe Awada</div><div class="sb-ts">Dashboard IA</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-gl">Principal</div>
+    <button class="sb-a on" onclick="goPage('analytics')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Analítica</button>
+    <button class="sb-a" onclick="goPage('relatorio')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Relatório Executivo</button>
+    <button class="sb-a" onclick="goPage('produtos')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>Produtos</button>
+    <button class="sb-a" onclick="goPage('calendario')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendário</button>
+    <button class="sb-a" onclick="goPage('mapa')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>Mapa de Origem</button>
+    <div class="sb-gl">Leads</div>
+    <button class="sb-a" onclick="goPage('leads-wpp')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Leads WhatsApp</button>
+    <button class="sb-a" onclick="goPage('leads-ig')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>Leads Instagram</button>
+    <div class="sb-gl">Gestão</div>
+    <button class="sb-a" onclick="goPage('human')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Artificial Intelligence</button>
+    <div class="sb-gl">Conta</div>
+    <button class="sb-a" onclick="goPage('config')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configurações</button>
+    <button class="sb-a" onclick="goPage('perfil')"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu Perfil</button>
+  </nav>
+  <div class="sb-bot">
+    <div class="sb-st"><span class="sb-dot"></span>Sistema ativo — WPP v12.3 · IG v6</div>
+    <div class="sb-usr"><div class="sb-av" id="sb-av">E</div><div><div class="sb-un" id="sb-nm">Usuário</div><div class="sb-ue" id="sb-em">—</div></div></div>
+    <div class="sb-btns">
+      <button class="sbb" onclick="goPage('config')"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Config</button>
+      <button class="sbb sbb-out" onclick="doLogout()"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sair</button>
     </div>
-  </aside>
-  <main class="main">
-    <div class="topbar"><div class="tb-l"><div class="tb-title" id="tb-title">Analítica</div><span class="tb-sub" id="tb-sub">Visão geral</span></div><div class="tb-r"><span class="tb-time" id="tb-time">—</span><div class="th-tog" onclick="toggleTheme()"><span>☀️</span><div class="th-tog-track"><div class="th-tog-thumb"></div></div><span class="th-tog-lbl">Escuro</span></div></div></div>
-    <div class="page active" id="page-analytics"><div class="card"><div class="ch"><div class="ct">Bem‑vindo ao dashboard</div></div><p>Seu login foi bem‑sucedido! Aqui serão exibidos os dados de WhatsApp e Instagram assim que forem carregados.</p></div></div>
-    <div class="page" id="page-config"><div class="card"><div class="ch"><div class="ct">Configurações</div></div><p>Personalize sua experiência.</p></div></div>
-    <div class="page" id="page-perfil"><div class="card"><div class="ch"><div class="ct">Meu Perfil</div></div><p>Informações do usuário.</p></div></div>
-  </main>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="tb-l"><div class="tb-title" id="tb-title">Analítica</div><span class="tb-sub" id="tb-sub">Visão geral</span></div>
+    <div class="tb-r">
+      <span class="tb-time" id="tb-time">—</span>
+      <div class="th-tog" onclick="toggleTheme()">
+        <span class="th-tog-sun" id="th-sun">☀️</span>
+        <div class="th-tog-track"><div class="th-tog-thumb"></div></div>
+        <span class="th-tog-lbl" id="th-lbl-top">Escuro</span>
+      </div>
+      <div class="period-bar" id="period-bar">
+        <button class="period-btn on" onclick="setPeriod(7)">7d</button>
+        <button class="period-btn" onclick="setPeriod(15)">15d</button>
+        <button class="period-btn" onclick="setPeriod(30)">30d</button>
+        <button class="period-btn" onclick="setPeriod(90)">90d</button>
+        <button class="period-btn" onclick="setPeriod(180)">180d</button>
+        <button class="period-btn" onclick="setPeriod(360)">360d</button>
+        <button class="period-btn" onclick="setPeriod(0)">Tudo</button>
+      </div>
+      <button class="btn-gl btn-gl-blue" id="btn-ref" onclick="refreshPage()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Atualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- ANALÍTICA -->
+  <div class="page active" id="page-analytics">
+    <div class="err-b" id="err-analytics"></div>
+    <div class="stat-tabs">
+      <button class="stat-tab on" onclick="switchStatTab('overview')">Visão Geral</button>
+      <button class="stat-tab" onclick="switchStatTab('funnel')">Funil de Conversão</button>
+      <button class="stat-tab" onclick="switchStatTab('heatmap')">Heatmap de Atividade</button>
+    </div>
+    <div class="stat-section active" id="stat-overview">
+      <div class="mgrid">
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="m-wpp">—</div><div class="mc-lbl">Conversas WhatsApp</div><div class="mc-delta flat" id="d-wpp"></div><div class="mc-spark"><canvas id="sp-wpp"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="m-ig">—</div><div class="mc-lbl">Conversas Instagram</div><div class="mc-delta flat" id="d-ig"></div><div class="mc-spark"><canvas id="sp-ig"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(239,71,111,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ef476f" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="mc-badge" style="background:rgba(239,71,111,.08);color:#ef476f">AI</span></div><div class="mc-val" id="m-bloq">—</div><div class="mc-lbl">Atendimentos registrados</div><div class="mc-delta flat" id="d-bloq"></div><div class="mc-spark"><canvas id="sp-bloq"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#ef476f,#ff6b9d)"></div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(6,214,160,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#06d6a0" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="mc-badge" style="background:rgba(6,214,160,.08);color:#06d6a0">Período</span></div><div class="mc-val" id="m-hoje">—</div><div class="mc-lbl">Total no período</div><div class="mc-delta flat" id="d-hoje"></div><div class="mc-spark"><canvas id="sp-hoje"></canvas></div><div class="mc-accent" style="background:linear-gradient(90deg,#06d6a0,#34d399)"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Volume por canal</div><span class="cb">Período selecionado</span></div><div class="leg"><span class="li"><span class="ls" style="background:#4361ee"></span>WhatsApp</span><span class="li"><span class="ls" style="background:#7c3aed"></span>Instagram</span></div><div class="cw" style="height:180px"><canvas id="cCanal"></canvas></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Evolução diária</div><span class="cb" id="evo-period-label">Últimos 7 dias</span></div><div class="leg"><span class="li"><span class="ls" style="background:#4361ee"></span>WhatsApp</span><span class="li"><span class="ls" style="background:#7c3aed"></span>Instagram</span></div><div class="cw" style="height:180px"><canvas id="cEvo"></canvas></div></div>
+      </div>
+      <div class="g2" style="margin-top:16px">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Interesse por produto</div><span class="cb" id="bp-a">—</span></div><div class="leg" id="leg-prod-a"></div><div class="cw" style="height:220px"><canvas id="cProdPie"></canvas></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Crescimento acumulado</div><span class="cb">Total leads</span></div><div class="cw" style="height:220px"><canvas id="cAcumulado"></canvas></div></div>
+      </div>
+    </div>
+    <div class="stat-section" id="stat-funnel">
+      <div class="g2" style="margin-bottom:16px">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Funil WPP — etapas</div><span class="cb" id="funnelwpp-total">—</span></div><div id="funnel-wpp-chart"></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Funil IG — etapas</div><span class="cb" id="funnelig-total">—</span></div><div id="funnel-ig-chart"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Qualidade leads WPP</div><span class="cb" id="quality-wpp">—</span></div><div style="height:200px"><canvas id="cQualWpp"></canvas></div></div>
+        <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Qualidade leads IG</div><span class="cb" id="quality-ig">—</span></div><div style="height:200px"><canvas id="cQualIg"></canvas></div></div>
+      </div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Atendimentos por produto</div><span class="cb" id="human-rate-total">—</span></div><div style="height:260px"><canvas id="cHumanRate"></canvas></div></div>
+    </div>
+    <div class="stat-section" id="stat-heatmap">
+      <div class="card" style="margin-bottom:16px"><div class="ch"><div class="ct">Atividade WPP — hora × dia da semana</div><span class="cb">Clique para ver leads</span></div><div class="heatmap-wrap" id="heatmap-wpp"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="ch"><div class="ct">Atividade IG — hora × dia da semana</div><span class="cb">Clique para ver leads</span></div><div class="heatmap-wrap" id="heatmap-ig"></div></div>
+      <div class="card"><div class="ch"><div class="ct">Volume por produto — WPP vs IG</div><span class="cb" id="bp-canal">—</span></div><div style="height:300px"><canvas id="cProdCanal"></canvas></div></div>
+    </div>
+  </div>
+  <div class="page" id="page-produtos">
+    <div class="pg-hdr"><div><div class="pg-title">Produtos</div><div class="pg-sub">Toque em um produto para ver métricas detalhadas</div></div></div>
+    <div class="err-b" id="err-produtos"></div>
+    <div class="prod-grid" id="prod-grid"><div class="empty">Carregando...</div></div>
+    <div class="card"><div class="ch"><div class="ct">Comparativo de produtos</div><span class="cb" id="bp-p">Total</span></div><div class="cw" style="height:280px"><canvas id="cProdBar" role="img" aria-label="prod bar">.</canvas></div></div>
+  </div>
+
+  <!-- PRODUTO DETAIL -->
+  <div id="page-produto-detail">
+    <div class="pd-header" id="pd-header">
+      <div class="pd-icon"><img id="pd-img" src="" alt=""/></div>
+      <div class="pd-info">
+        <div class="pd-name" id="pd-name">—</div>
+        <div class="pd-desc" id="pd-desc">Métricas detalhadas do produto</div>
+        <div class="pd-stats" id="pd-stats"></div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-shrink:0">
+        <button class="btn-gl btn-gl-green" onclick="exportProdCSV()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar CSV
+        </button>
+        <button class="btn-gl" onclick="goPage('produtos')">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Voltar
+        </button>
+      </div>
+    </div>
+    <div class="pd-body">
+      <div class="pd-tabs">
+        <button class="pd-tab on" onclick="switchPdTab('overview')">Visão Geral</button>
+        <button class="pd-tab" onclick="switchPdTab('wpp')">Leads WhatsApp</button>
+        <button class="pd-tab" onclick="switchPdTab('ig')">Leads Instagram</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div class="pd-tab-content active" id="pd-tab-overview">
+        <div class="mgrid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="pd-m-wpp">—</div><div class="mc-lbl">Conversas WhatsApp</div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
+          <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="pd-m-ig">—</div><div class="mc-lbl">Conversas Instagram</div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+          <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(6,214,160,.1)"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="#06d6a0" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="mc-badge" style="background:rgba(6,214,160,.08);color:#06d6a0">Total</span></div><div class="mc-val" id="pd-m-total">—</div><div class="mc-lbl">Total de conversas</div><div class="mc-accent" style="background:linear-gradient(90deg,#06d6a0,#34d399)"></div></div>
+        </div>
+        <div class="g2">
+          <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Evolução mensal</div><span class="cb">WPP + IG</span></div><div class="cw" style="height:200px"><canvas id="pd-cEvo" role="img" aria-label="evolução produto">.</canvas></div></div>
+          <div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Etapa do funil</div><span class="cb" id="pd-cb-funil">—</span></div><div class="leg" id="pd-leg-funil"></div><div class="cw" style="height:200px"><canvas id="pd-cFunil" role="img" aria-label="funil produto">.</canvas></div></div>
+        </div>
+      </div>
+
+      <!-- LEADS WPP -->
+      <div class="pd-tab-content" id="pd-tab-wpp">
+        <div class="card">
+          <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="pd-si-wpp" placeholder="Buscar nome ou telefone..." oninput="filterPdWpp()"/></div></div><span class="cb" id="pd-bc-wpp">—</span></div>
+          <div class="tw"><table><thead><tr><th>#</th><th>Nome</th><th>Telefone</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="pd-tb-wpp"><tr><td colspan="5" class="empty">Carregando...</td></tr></tbody>}</div>
+          <div class="pag" id="pd-pag-wpp"></div>
+        </div>
+      </div>
+
+      <!-- LEADS IG -->
+      <div class="pd-tab-content" id="pd-tab-ig">
+        <div class="card">
+          <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="pd-si-ig" placeholder="Buscar @ ou nome..." oninput="filterPdIg()"/></div></div><span class="cb" id="pd-bc-ig">—</span></div>
+          <div class="tw"><table><thead><tr><th>#</th><th>@ Instagram</th><th>Nome</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="pd-tb-ig"><tr><td colspan="5" class="empty">Carregando...</td></tr></tbody></table></div>
+          <div class="pag" id="pd-pag-ig"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADS WPP -->
+  <div class="page" id="page-leads-wpp">
+    <div class="pg-hdr"><div><div class="pg-title">Leads WhatsApp</div><div class="pg-sub">Contatos identificados — clique numa linha para ver o histórico</div></div></div>
+    <div class="err-b" id="err-leads-wpp"></div>
+    <div class="card">
+      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-wpp" placeholder="Buscar nome, telefone, produto..." oninput="filterLeadsWpp()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('wpp')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-wpp">—</span></div>
+      <div class="tbar-left" style="margin-bottom:.75rem"><div class="rec-tabs" id="rec-wpp">
+        <button class="rec-tab on" onclick="setRecWpp(0)">Todos<span class="rec-tab-count" id="rc-wpp-0"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(2)">Últimas 2h<span class="rec-tab-count" id="rc-wpp-2"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(6)">6h<span class="rec-tab-count" id="rc-wpp-6"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(24)">24h<span class="rec-tab-count" id="rc-wpp-24"></span></button>
+        <button class="rec-tab" onclick="setRecWpp(168)">7 dias<span class="rec-tab-count" id="rc-wpp-168"></span></button>
+      </div></div>
+      <div class="tw"><table><thead><tr><th>#</th><th>Score</th><th>Nome</th><th>Telefone</th><th>Contato</th><th>Produto interesse</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="tb-wpp"><tr><td colspan="8" class="empty">Carregando...</tr></tr></tbody></table></div>
+      <div class="pag" id="pag-wpp"></div>
+    </div>
+  </div>
+
+  <!-- LEADS IG -->
+  <div class="page" id="page-leads-ig">
+    <div class="pg-hdr"><div><div class="pg-title">Leads Instagram</div><div class="pg-sub">Seguidores do Instagram — clique numa linha para ver detalhes</div></div></div>
+    <div class="err-b" id="err-leads-ig"></div>
+    <div class="card">
+      <div class="tbar"><div class="tbar-left"><div class="srch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si-ig" placeholder="Buscar @, nome, telefone, produto..." oninput="filterLeadsIg()"/></div><button class="btn-gl btn-gl-green" onclick="exportCSV('ig')"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div><span class="cb" id="bc-ig">—</span></div>
+      <div class="tbar-left" style="margin-bottom:.75rem"><div class="rec-tabs" id="rec-ig">
+        <button class="rec-tab on" onclick="setRecIg(0)">Todos<span class="rec-tab-count" id="rc-ig-0"></span></button>
+        <button class="rec-tab" onclick="setRecIg(2)">Últimas 2h<span class="rec-tab-count" id="rc-ig-2"></span></button>
+        <button class="rec-tab" onclick="setRecIg(6)">6h<span class="rec-tab-count" id="rc-ig-6"></span></button>
+        <button class="rec-tab" onclick="setRecIg(24)">24h<span class="rec-tab-count" id="rc-ig-24"></span></button>
+        <button class="rec-tab" onclick="setRecIg(168)">7 dias<span class="rec-tab-count" id="rc-ig-168"></span></button>
+      </div></div>
+      <div class="tw"><table><thead><tr><th>#</th><th>Score</th><th>@ Instagram</th><th>Nome</th><th>Telefone</th><th>Contato</th><th>Produto interesse</th><th>Etapa funil</th><th>Última interação</th></tr></thead><tbody id="tb-ig"><tr><td colspan="9" class="empty">Carregando...</td></tr></tbody></table></div>
+      <div class="pag" id="pag-ig"></div>
+    </div>
+  </div>
+
+  <!-- HUMAN -->
+  <div class="page" id="page-human">
+    <div class="mgrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem;" id="human-kpis">
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(239,71,111,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ef476f" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="mc-badge" style="background:rgba(239,71,111,.08);color:#ef476f">Total</span></div><div class="mc-val" id="h-total">—</div><div class="mc-lbl">Atendimentos registrados</div><div class="mc-accent" style="background:linear-gradient(90deg,#ef476f,#ff6b9d)"></div></div>
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(255,159,28,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#ff9f1c" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="mc-badge" style="background:rgba(255,159,28,.08);color:#ff9f1c">Hoje</span></div><div class="mc-val" id="h-hoje">—</div><div class="mc-lbl">Atendimentos hoje</div><div class="mc-accent" style="background:linear-gradient(90deg,#ff9f1c,#fbbf24)"></div></div>
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(67,97,238,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#4361ee" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="mc-badge" style="background:rgba(67,97,238,.08);color:#4361ee">WPP</span></div><div class="mc-val" id="h-wpp">—</div><div class="mc-lbl">Via WhatsApp</div><div class="mc-accent" style="background:linear-gradient(90deg,#4361ee,#738eff)"></div></div>
+      <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:rgba(124,58,237,.1)"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div><span class="mc-badge" style="background:rgba(124,58,237,.08);color:#7c3aed">IG</span></div><div class="mc-val" id="h-ig">—</div><div class="mc-lbl">Via Instagram</div><div class="mc-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px;">
+      <div class="card" style="margin-bottom:0">
+        <div class="ch"><div class="ct">Intervenções por hora do dia</div><span class="cb">Padrão de atividade</span></div>
+        <div style="height:160px"><canvas id="cHumanHour"></canvas></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ch"><div class="ct">Intervenções por produto</div><span class="cb" id="h-prod-total">—</span></div>
+        <div style="height:160px"><canvas id="cHumanProd"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbar">
+        <div class="tbar-left" style="flex-wrap:wrap;gap:8px;">
+          <div class="srch">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="si-human" placeholder="Buscar nome, telefone ou @..." oninput="filterHuman()"/>
+          </div>
+          <div class="rec-tabs" id="rec-human-tabs">
+            <button class="rec-tab on" onclick="setHumanRec(0)">Todos<span class="rec-tab-count" id="hrc-0"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(1)">Última hora<span class="rec-tab-count" id="hrc-1"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(6)">6h<span class="rec-tab-count" id="hrc-6"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(24)">24h<span class="rec-tab-count" id="hrc-24"></span></button>
+            <button class="rec-tab" onclick="setHumanRec(168)">7 dias<span class="rec-tab-count" id="hrc-168"></span></button>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <button class="rec-tab on" id="hcf-all" onclick="setHumanCanal('all')">Todos</button>
+            <button class="rec-tab" id="hcf-wpp" onclick="setHumanCanal('wpp')"><span style="color:var(--blue)">●</span> WPP</button>
+            <button class="rec-tab" id="hcf-ig" onclick="setHumanCanal('ig')"><span style="color:var(--purple)">●</span> IG</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="cb" id="bc-human">—</span>
+          <button class="btn-gl btn-gl-green" onclick="exportCSV('human')">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+        </div>
+      </div>
+      <div class="err-b" id="err-human"></div>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Canal</th>
+              <th>Contato</th>
+              <th>Nome</th>
+              <th>Produto</th>
+              <th>Etapa funil</th>
+              <th>Score</th>
+              <th>Interveio há</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tb-human">
+            <tr><td colspan="9" class="empty">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="page" id="page-config">
+    <div class="pg-hdr"><div><div class="pg-title">Configurações</div><div class="pg-sub">Personalize sua experiência</div></div></div>
+    <div style="margin-bottom:1.25rem"><div class="form-section-title">Aparência</div>
+    <div class="theme-card"><div><div class="ti-title">Tema da interface</div><div class="ti-sub">Alterne entre modo claro e escuro</div></div><div class="toggle-wrap"><span style="font-size:13px;color:var(--text2)">Claro</span><div class="toggle" onclick="toggleTheme()"><div class="toggle-thumb"></div></div><span class="toggle-label" id="th-lbl-cfg">Escuro</span></div></div></div>
+    <div><div class="form-section-title">Sistema</div><div class="card" style="margin-bottom:0"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Versão do sistema</div><div style="font-size:12px;color:var(--text3)">WPP IA v12.3 · IG IA v6 · Dashboard IA v7.0</div></div><span class="pill pg">Ativo</span></div></div></div>
+  </div>
+
+  <!-- PERFIL -->
+  <div class="page" id="page-perfil">
+    <div class="pg-hdr"><div><div class="pg-title">Meu Perfil</div><div class="pg-sub">Gerencie suas informações pessoais</div></div></div>
+    <div class="ok-b" id="ok-perfil"></div>
+    <div class="err-b" id="err-perfil"></div>
+    <div class="profile-top"><div class="profile-avatar" id="pf-av">E</div><div><div class="pi-name" id="pf-name">—</div><div class="pi-email" id="pf-email">—</div><div class="pi-role">Administrador</div></div></div>
+    <div class="card">
+      <div class="form-section">
+        <div class="form-section-title">Informações pessoais</div>
+        <div class="form-row"><div class="form-group"><label class="form-label">Nome completo</label><input class="form-input" type="text" id="pf-inp-name" placeholder="Seu nome completo"/></div><div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="pf-inp-email" disabled/></div></div>
+        <button class="btn-save" onclick="saveProfile()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar alterações</button>
+      </div>
+      <div class="form-section" style="margin-bottom:0">
+        <div class="form-section-title">Redefinir senha</div>
+        <div class="form-row"><div class="form-group"><label class="form-label">Nova senha</label><input class="form-input" type="password" id="pf-new-pass" placeholder="Mínimo 6 caracteres"/></div><div class="form-group"><label class="form-label">Confirmar senha</label><input class="form-input" type="password" id="pf-conf-pass" placeholder="Repita a senha"/></div></div>
+        <button class="btn-save" onclick="changePassword()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Alterar senha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATÓRIO EXECUTIVO -->
+  <div class="page" id="page-relatorio">
+    <div class="pg-hdr"><div><div class="pg-title">Relatório Executivo</div><div class="pg-sub" id="rel-periodo-label">Período selecionado</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn-gl btn-gl-blue" onclick="gerarResumoIA()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Gerar Resumo IA</button><button class="btn-gl btn-gl-green" onclick="window.print()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar PDF</button></div></div>
+    <div class="report-hero" id="rel-ai-box"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="width:32px;height:32px;background:linear-gradient(135deg,#4361ee,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div style="font-size:13px;font-weight:700;color:var(--text);">Resumo Inteligente</div><span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--blueg);color:var(--blue);border:1px solid rgba(67,97,238,.2);">Gerado por IA</span></div><div id="rel-ai-text">Clique em "Gerar Resumo IA" para criar uma análise executiva do período selecionado.</div></div>
+    <div class="report-kpi-grid" id="rel-kpis"></div>
+    <div class="g2"><div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Top Leads Quentes do período</div><span class="cb" id="rel-top-count">—</span></div><div id="rel-top-leads"></div></div><div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Ranking de produtos</div><span class="cb" id="rel-prod-total">—</span></div><div style="height:280px"><canvas id="cRelProd">.</canvas></div></div></div>
+    <div class="g2" style="margin-top:16px"><div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Crescimento acumulado</div><span class="cb">Total leads</span></div><div style="height:200px"><canvas id="cRelAcum">.</canvas></div></div><div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Canal por produto</div><span class="cb">WPP vs IG</span></div><div style="height:200px"><canvas id="cRelCanal">.</canvas></div></div></div>
+  </div>
+
+  <!-- CALENDÁRIO -->
+  <div class="page" id="page-calendario">
+    <div style="display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <div style="display:flex;align-items:center;gap:.75rem;"><div style="display:flex;align-items:center;gap:4px;"><button class="btn-gl" onclick="calNav(-1)" style="width:32px;height:32px;padding:0;justify-content:center;font-size:16px;">&#8249;</button><button class="btn-gl" onclick="calGoToday()" style="font-size:11px;font-weight:700;padding:0 12px;height:32px;">Hoje</button><button class="btn-gl" onclick="calNav(1)" style="width:32px;height:32px;padding:0;justify-content:center;font-size:16px;">&#8250;</button></div><div id="cal-period-title" style="font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.4px;min-width:200px;">—</div></div>
+        <div style="display:flex;background:var(--bg3);border:1.5px solid var(--border);border-radius:11px;padding:3px;gap:2px;"><button class="cal-view-btn" onclick="setCalView('month')">Mês</button><button class="cal-view-btn active" onclick="setCalView('week')">Semana</button><button class="cal-view-btn" onclick="setCalView('day')">Dia</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 270px;gap:16px;margin-bottom:16px;">
+        <div class="card" style="margin-bottom:0;padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:520px;" id="cal-main-panel"><div class="empty" style="padding:3rem;">Carregando...</div></div>
+        <div class="card" style="margin-bottom:0;padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:520px;"><div style="padding:.875rem 1rem;border-bottom:1px solid var(--border2);flex-shrink:0;"><div style="font-size:13px;font-weight:700;color:var(--text);" id="cal-sb-date">Selecione um dia</div><div style="font-size:11px;color:var(--text3);margin-top:2px;" id="cal-sb-count">—</div></div><div style="flex:1;overflow-y:auto;padding:.625rem .875rem;" id="cal-sb-list"><div class="cal-sb-empty">Clique em um dia para ver os leads</div></div></div>
+      </div>
+      <div class="g2"><div class="card" style="margin-bottom:0;"><div class="ch"><div class="ct">Distribuição por hora</div><span class="cb">Todos os canais</span></div><div style="height:140px"><canvas id="cCalHour"></canvas></div></div><div class="card" style="margin-bottom:0;"><div class="ch"><div class="ct">Dia da semana mais ativo</div><span class="cb">Todos os canais</span></div><div style="height:140px"><canvas id="cCalDow"></canvas></div></div></div>
+    </div>
+  </div>
+  <div class="page" id="page-mapa">
+    <div class="pg-hdr"><div><div class="pg-title">Mapa de Origem</div><div class="pg-sub">De onde vêm seus leads — por estado brasileiro</div></div></div>
+    <div class="mgrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem;" id="map-kpis"></div>
+    <div class="g2" style="margin-bottom:16px;"><div class="card" style="margin-bottom:0;"><div class="ch"><div class="ct">Mapa de calor — estados</div><span class="cb" id="map-total">—</span></div><div id="brazil-map-container" style="width:100%;min-height:300px;"></div></div><div class="card" style="margin-bottom:0;"><div class="ch"><div class="ct">Leads por estado</div><span class="cb">Top 15</span></div><div style="height:320px"><canvas id="cMapEstado"></canvas></div></div></div>
+    <div class="g2"><div class="card" style="margin-bottom:0;"><div class="ch"><div class="ct">Top 10 DDDs</div><span class="cb">Maior volume</span></div><div style="height:260px"><canvas id="cMapDDD"></canvas></div></div><div class="card" style="margin-bottom:0;"><div class="ch"><div class="ct">Nacional vs Internacional</div><span class="cb" id="map-intl">—</span></div><div style="height:260px"><canvas id="cMapIntl"></canvas></div></div></div>
+  </div>
+</main>
 </div>
+</div>
+
+<!-- LEAD DETAIL MODAL -->
+<div id="lead-modal" style="display:none" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Detalhes do Lead</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-msgs" id="modal-msgs"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
 </div>
 
 <script>
-// CONFIGURAÇÃO DO SUPABASE (credenciais corretas)
-const SUPABASE_URL = 'https://xckqthybbgxdwnjmiced.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhja3F0aHliYmd4ZHduam1pY2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzI4MTAsImV4cCI6MjA5MTg0ODgxMH0.vvBZg0Q62CmF4nSK9JEgf1GXGF35VDVxHJ_B7HOORwQ';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Supabase configuration
+var SU = 'https://xckqthybbgxdwnjmiced.supabase.co';
+var SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhja3F0aHliYmd4ZHduam1pY2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzI4MTAsImV4cCI6MjA5MTg0ODgxMH0.vvBZg0Q62CmF4nSK9JEgf1GXGF35VDVxHJ_B7HOORwQ';
+var sb = supabase.createClient(SU, SK);
 
-// Variáveis globais
-let currentUser = null;
-let analyticsLoaded = false;
-let currentPage = 'analytics';
+// Product list
+var PRODUTOS = [
+  {label:'Clínica / Consulta',color:'#ef476f',pill:'pr',keys:['CLINICA','CONSULTA','AWADA','INSTITUTO','SUPORTE_CLINICA'],img:'data:image/png;base64,...'},
+  {label:'Faculdade da Vida',color:'#7c3aed',pill:'pp',keys:['FACULDADE','FDV','VIDA'],img:'data:image/png;base64,...'},
+  {label:'Curso de Extensão MDF',color:'#ff9f1c',pill:'po',keys:['EXTENSAO','EXTENSÃO','MDF'],img:'data:image/png;base64,...'},
+  {label:'Jejum Ferramenta Milenar',color:'#4361ee',pill:'pb',keys:['JEJUM'],img:'data:image/png;base64,...'},
+  {label:'Saúde da Mulher',color:'#ec4899',pill:'ppk',keys:['MULHER','SAUDE_MULHER'],img:'data:image/png;base64,...'},
+  {label:'Comunidade Integrativa',color:'#06d6a0',pill:'pg',keys:['COMUNIDADE'],img:'data:image/png;base64,...'},
+  {label:'Suporte / Plataforma',color:'#06b6d4',pill:'pc2',keys:['SUPORTE','PLATAFORMA','ACESSO','SENHA','LOGIN'],img:'data:image/png;base64,...'},
+  {label:'Conteúdos Gratuitos',color:'#fbbf24',pill:'py',keys:['GRATUITO','CONTEUDO_GRATUITO'],img:'data:image/png;base64,...'}
+];
 
-// Função de LOGIN (CORRIGIDA E FUNCIONAL)
-window.doLogin = async function() {
-  const email = document.getElementById('le').value.trim();
-  const password = document.getElementById('lp').value;
-  const errDiv = document.getElementById('lerr');
-  const btn = document.getElementById('btn-login');
+// Global variables
+var charts = {};
+var allWppFull = [], allIgFull = [], allHumanFull = [];
+var filtWpp = [], filtIg = [], filtHuman = [];
+var pWpp = 1, pIg = 1;
+var currentPage = 'analytics';
+var currentUser = null;
+var analyticsLoaded = false;
+var currentProduto = null;
+var pdWppAll = [], pdIgAll = [], pdWppFilt = [], pdIgFilt = [], pdPWpp = 1, pdPIg = 1;
+var recHoursWpp = 0, recHoursIg = 0;
+var humanRecHours = 0, humanCanal = 'all';
+var PER = 20;
+var CHART_COLORS = ['#4361ee','#7c3aed','#ff9f1c','#06d6a0','#ef476f','#06b6d4','#fbbf24','#ec4899','#14b8a6','#f43f5e'];
+var DDD_ESTADO = {11:'SP',12:'AC',13:'SP',14:'SP',15:'SP',16:'SP',17:'SP',18:'SP',19:'SP',21:'RJ',22:'RJ',24:'RJ',27:'ES',28:'ES',31:'MG',32:'MG',33:'MG',34:'MG',35:'MG',37:'MG',38:'MG',41:'PR',42:'PR',43:'PR',44:'PR',45:'PR',46:'PR',47:'SC',48:'SC',49:'SC',51:'RS',53:'RS',54:'RS',55:'RS',61:'DF',62:'GO',63:'TO',64:'GO',65:'MT',66:'MT',67:'MS',68:'AC',69:'RO',71:'BA',73:'BA',74:'BA',75:'BA',77:'BA',79:'SE',81:'PE',82:'AL',83:'PB',84:'RN',85:'CE',86:'PI',87:'PE',88:'CE',89:'PI',91:'PA',92:'AM',93:'PA',94:'PA',95:'RR',96:'AP',97:'AM',98:'MA',99:'MA'};
+var ESTADO_NOME = {AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'};
+var currentPeriodDays = 7;
+var CAL_DATE = new Date();
+var CAL_VIEW = 'week';
+var CAL_SELECTED = new Date();
+var CAL_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var CAL_DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+var CAL_DIAS_FULL = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 
-  // Limpa erro anterior
-  errDiv.style.display = 'none';
-  errDiv.textContent = '';
-
-  if (!email || !password) {
-    errDiv.textContent = 'Preencha e-mail e senha.';
-    errDiv.style.display = 'block';
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Entrando...';
-
-  try {
-    const { data, error } = await sb.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if (error) throw new Error(error.message);
-
-    // Sucesso: esconde login e mostra dashboard
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('dash').style.display = 'block';
-    currentUser = data.user;
-
-    // Atualiza informações do usuário na sidebar
-    const nome = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Usuário';
-    document.getElementById('sb-nm').innerText = nome;
-    document.getElementById('sb-em').innerText = data.user.email;
-    document.getElementById('sb-av').innerText = nome.charAt(0).toUpperCase();
-    
-    // Carrega dados iniciais (exemplo)
-    loadUserData();
-  } catch (err) {
-    errDiv.textContent = 'E-mail ou senha incorretos.';
-    errDiv.style.display = 'block';
-    console.error('Erro no login:', err);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Entrar no Sistema';
-  }
-};
-
-// Função de LOGOUT
-window.doLogout = async function() {
-  await sb.auth.signOut();
-  document.getElementById('dash').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  currentUser = null;
-};
-
-// Carregar dados do usuário (exemplo)
-async function loadUserData() {
-  if (!currentUser) return;
-  const tb = document.getElementById('tb-time');
-  if (tb) tb.textContent = 'Atualizado ' + new Date().toLocaleTimeString();
-  analyticsLoaded = true;
-}
-
-// Navegação entre páginas
-window.goPage = function(pageId) {
-  document.querySelectorAll('.sb-a').forEach(btn => btn.classList.remove('on'));
-  const activeBtn = document.querySelector(`.sb-a[onclick="goPage('${pageId}')"]`);
-  if (activeBtn) activeBtn.classList.add('on');
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById(`page-${pageId}`);
-  if (target) target.classList.add('active');
-  currentPage = pageId;
-  const titles = { analytics: 'Analítica', config: 'Configurações', perfil: 'Meu Perfil' };
-  const subtitles = { analytics: 'Visão geral', config: 'Personalize sua experiência', perfil: 'Suas informações' };
-  const tt = document.getElementById('tb-title');
-  const ts = document.getElementById('tb-sub');
-  if (tt) tt.textContent = titles[pageId] || pageId;
-  if (ts) ts.textContent = subtitles[pageId] || '';
-};
-
-// Alternar tema claro/escuro
-window.toggleTheme = function() {
-  const html = document.documentElement;
-  const isLight = html.getAttribute('data-theme') === 'light';
-  html.setAttribute('data-theme', isLight ? 'dark' : 'light');
-  const label = isLight ? 'Claro' : 'Escuro';
-  const lblSpan = document.querySelector('.th-tog-lbl');
-  if (lblSpan) lblSpan.textContent = label;
-};
-
-// Verificar sessão existente ao carregar a página
-(async function checkSession() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session && session.user) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('dash').style.display = 'block';
-    currentUser = session.user;
-    const nome = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Usuário';
-    document.getElementById('sb-nm').innerText = nome;
-    document.getElementById('sb-em').innerText = session.user.email;
-    document.getElementById('sb-av').innerText = nome.charAt(0).toUpperCase();
-    loadUserData();
-  }
-})();
-
-// Garantir que o botão de login tenha o evento (caso o onclick não funcione)
-document.addEventListener('DOMContentLoaded', function() {
-  const loginBtn = document.getElementById('btn-login');
-  if (loginBtn) {
-    // Remove qualquer onclick anterior e adiciona via JS para garantir
-    loginBtn.removeAttribute('onclick');
-    loginBtn.addEventListener('click', doLogin);
-  }
-});
-</script>
-</body>
-</html>
+// Helper functions
+function TICK() { return document.documentElement.getAttribute('data-theme') === 'dark' ? '#4a5278' : '#9298b5'; }
+function GRID() { return document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgba(255,255,255,.05)' : 'rgba(80,90,160,.07)'; }
+function mk(id, cfg) { var el = document.getElementById(id); if (!el) return; if (charts[id]) charts[id].destroy(); charts[id] = new Chart(el.getContext('2d'), cfg); return charts[id]; }
+function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function fmtDate(d) { return d ? new Date(d).toLocaleString('pt-BR') : '—'; }
+function timeAgo(date) { var diff = Math.floor((Date.now() - date.getTime()) / 1000); if (diff < 60) return 'agora'; if (diff < 3600) return Math.floor(diff / 60) + 'min atrás'; if (diff < 86400) return Math.floor(diff / 3600) + 'h atrás'; if (diff < 604800) return Math.floor(diff / 86400) + 'd atrás'; return date.toLocaleDateString('pt-BR'); }
+function normProd(r) { if (!r) return null; var u = r.toUpperCase().replace(/[\s\-]/g, '_'); for (var i = 0; i < PRODUTOS.length; i++) { for (var j = 0; j < PRODUTOS[i].keys.length; j++) { if (u.indexOf(PRODUTOS[i].keys[j]) >= 0) return PRODUTOS[i].label; } } return null; }
+function normProdSmart(produto, msgs) { var base = normProd(produto); if (base === 'Suporte / Plataforma' && msgs) { var m = String(typeof msgs === 'string' ? msgs : JSON.stringify(msgs)).toLowerCase(); if (m.indexOf('consulta') >= 0 || m.indexOf('agendar') >= 0 || m.indexOf('agendamento') >= 0 || m.indexOf('marcar') >= 0 || m.indexOf('quanto custa') >= 0 || m.indexOf('horario') >= 0 || m.indexOf('clinica') >= 0 || m.indexOf('hussein') >= 0 || m.indexOf('atendimento') >= 0) return 'Clínica / Consulta'; } return base; }
+function pillCls(v) { if (!v) return 'pz'; for (var i = 0; i < PRODUTOS.length; i++) if (v === PRODUTOS[i].label) return PRODUTOS[i].pill; return 'pz'; }
+function getProd(label) { for (var i = 0; i < PRODUTOS.length; i++) if (PRODUTOS[i].label === label) return PRODUTOS[i]; return null; }
+function monthly(arr) { var m = {}; arr.forEach(function(r) { var dt = r.atualizado_em || r.last_response_at; if (!dt) return; var d = new Date(dt); var k = d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0'); m[k] = (m[k] || 0) + 1; }); return m; }
+function leadScore(r, type) { var s = 0; if (r.nome && r.nome.trim() && r.nome !== 'Contato' && r.nome !== 'Amigo') s++; if ((r.telefone && r.telefone.trim()) || (r.usuario_id && String(r.usuario_id).trim())) s++; if (normProd(r.produto_interesse || '')) s++; if (r.etapa_funil && r.etapa_funil.trim()) s++; if (r.contato && r.contato.trim()) s++; if (type === 'ig' && r.instagram_handle && r.instagram_handle.trim()) s = Math.min(5, s + 1); return Math.min(5, s); }
+function scoreBadge(s) { var dots = ''; for (var i = 0; i < 5; i++) dots += '<span style="opacity:' + (i < s ? '1' : '.2') + '">●</span>'; var labels = ['Desconhecido', 'Frio', 'Morno', 'Qualificado', 'Quente', 'Pronto']; return '<span class="score-badge score-' + s + '">' + dots + ' ' + labels[s] + '</span>'; }
+function recFilter(arr, hours) { if (!hours) return arr; var cutoff = new Date(Date.now() - hours * 3600000).toISOString(); return arr.filter(function(r) { var d = r.atualizado_em || r.last_response_at; return d && d > cutoff; }); }
+function updateRecCounts(prefix, arr) { [0, 2, 6, 24, 168].forEach(function(h) { var el = document.getElementById('rc-' + prefix + '-' + h); if (el) { var n = h === 0 ? arr.length : recFilter(arr, h).length; el.textContent = n ? ' (' + n + ')' : ''; } }); }
+function setRecWpp(h) { recHoursWpp = h; document.querySelectorAll('#rec-wpp .rec-tab').forEach(function(b) { b.classList.remove('on'); }); document.querySelectorAll('#rec-wpp .rec-tab')[[0, 2, 6, 24, 168].indexOf(h)].classList.add('on'); filterLeadsWpp(); }
+function setRecIg(h) { recHoursIg = h; document.querySelectorAll('#rec-ig .rec-tab').forEach(function(b) { b.classList.remove('on'); }); document.querySelectorAll('#rec-ig .rec-tab')[[0, 2, 6, 24, 168].indexOf(h)].classList.add('on'); filterLeadsIg(); }
+function setHumanRec(h) { humanRecHours = h; document.querySelectorAll('#rec-human-tabs .rec-tab').forEach(function(b) { b.classList.remove('on'); }); var idx = [0, 1, 6, 24, 168].indexOf(h); var btns = document.querySelectorAll('#rec-human-tabs .rec-tab'); if (btns[idx]) btns[idx].classList.add('on'); applyHumanFilters(); }
+function setHumanCanal(c) { humanCanal = c; ['all', 'wpp', 'ig'].forEach(function(x) { var el = document.getElementById('hcf-' + x); if (el) el.classList.toggle('on', x === c); }); applyHumanFilters(); }
+function toggleTheme() { var h = document.documentElement; var d = h.getAttribute('data-theme') === 'light'; h.setAttribute('data-theme', d ? 'dark' : 'light'); var lbl = d ? 'Claro' : 'Escuro'; ['th-lbl-top', 'th-lbl-cfg'].forEach(function(id) { var el = document.getElementById(id); if (el) el.textContent = lbl; }); var se = document.getElementById('th-sun'); if (se) se.textContent = d ? '🌙' : '☀️'; if (analyticsLoaded) applyPeriodFilter(); }
+function setPeriod(days) { currentPeriodDays = days; document.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('on'); }); var map = {'7d': 7, '15d': 15, '30d': 30, '90d': 90, '180d': 180, '360d': 360, 'Tudo': 0}; document.querySelectorAll('.period-btn').forEach(function(b) { if (map[b.textContent] === days) b.classList.add('on'); }); var lbl = days === 0 ? 'Histórico completo' : 'Últimos ' + days + ' dias'; var el = document.getElementById('evo-period-label'); if (el) el.textContent = lbl; var rl = document.getElementById('rel-periodo-label'); if (rl) rl.textContent = days === 0 ? 'Histórico completo' : 'Período: últimos ' + days + ' dias'; if (analyticsLoaded) applyPeriodFilter(); }
+function periodCutoff() { if (!currentPeriodDays) return null; return new Date(Date.now() - currentPeriodDays * 86400000).toISOString(); }
+function filterByPeriod(arr) { var cutoff = periodCutoff(); if (!cutoff) return arr; return arr.filter(function(r) { var d = r.atualizado_em || r.last_response_at || r.bloqueado_em; return d && d > cutoff; }); }
+function applyPeriodFilter() { var wpp = filterByPeriod(window._wppAll || []); var ig = filterByPeriod(window._igAll || []); var bloq = filterByPeriod(window._bloqAll || []); var el; el = document.getElementById('m-wpp'); if (el) el.textContent = wpp.length.toLocaleString('pt-BR'); el = document.getElementById('m-ig'); if (el) el.textContent = ig.length.toLocaleString('pt-BR'); el = document.getElementById('m-bloq'); if (el) el.textContent = bloq.length.toLocaleString('pt-BR'); el = document.getElementById('m-hoje'); if (el) el.textContent = (wpp.length + ig.length).toLocaleString('pt-BR'); renderAnalytics(wpp, ig, bloq); renderFunnelSection(wpp, ig, bloq); renderHeatmapSection(wpp, ig); var wppL = filterByPeriod(window._wppLeads || []); var igL = filterByPeriod(window._igLeads || []); renderProdPage(wppL.concat(igL)); if (currentPage === 'relatorio') { renderRelatorio(); setTimeout(gerarResumoIA, 300); } if (currentPage === 'mapa') renderMapa(); if (currentPage === 'calendario') renderCalendar(); if (currentPeriodDays) { var prev = currentPeriodDays * 2; var pc = new Date(Date.now() - prev * 86400000).toISOString(); var cc = periodCutoff(); var pw = (window._wppAll || []).filter(function(r) { var d = r.atualizado_em; return d && d > pc && d < cc; }).length; var pi = (window._igAll || []).filter(function(r) { var d = r.atualizado_em || r.last_response_at; return d && d > pc && d < cc; }).length; renderDelta('d-wpp', wpp.length, pw); renderDelta('d-ig', ig.length, pi); renderDelta('d-hoje', wpp.length + ig.length, pw + pi); } }
+function renderDelta(id, cur, prev) { var el = document.getElementById(id); if (!el) return; if (!prev) { el.textContent = ''; return; } var pct = Math.round((cur - prev) / Math.max(1, prev) * 100); var arrow = pct > 0 ? '↑' : pct < 0 ? '↓' : '→'; el.className = 'mc-delta ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat'); el.textContent = arrow + ' ' + Math.abs(pct) + '% vs período anterior'; }
+function goPage(id) { document.querySelectorAll('.sb-a').forEach(function(a) { a.classList.remove('on'); }); var btn = document.querySelector('.sb-a[onclick*="goPage(\'' + id + '\'"]') || document.querySelector('.sb-a[onclick="goPage(\'' + id + '\')"]'); if (btn) btn.classList.add('on'); document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); }); document.getElementById('page-produto-detail').style.display = 'none'; var pg = document.getElementById('page-' + id); if (pg) pg.classList.add('active'); currentPage = id; var T = { analytics: 'Analítica', relatorio: 'Relatório Executivo', produtos: 'Produtos', calendario: 'Calendário', mapa: 'Mapa de Origem', 'leads-wpp': 'Leads WhatsApp', 'leads-ig': 'Leads Instagram', human: 'Artificial Intelligence', config: 'Configurações', perfil: 'Meu Perfil' }; var S = { analytics: 'Visão geral', relatorio: 'Análise executiva do período', produtos: 'Clique num produto para detalhes', calendario: 'Atividade de leads por dia', mapa: 'Origem geográfica dos leads', 'leads-wpp': 'Contatos identificados', 'leads-ig': 'Seguidores do Instagram', human: 'Monitoramento de atendimentos Artificial Intelligence', config: 'Personalize sua experiência', perfil: 'Suas informações' }; var tt = document.getElementById('tb-title'); if (tt) tt.textContent = T[id] || id; var ts = document.getElementById('tb-sub'); if (ts) ts.textContent = S[id] || ''; if (id === 'leads-wpp') loadLeadsWpp(); else if (id === 'leads-ig') loadLeadsIg(); else if (id === 'human') loadHuman(); else if (id === 'perfil') loadProfile(); else if (id === 'mapa') { if (analyticsLoaded) renderMapa(); } else if (id === 'relatorio') { if (analyticsLoaded) { renderRelatorio(); setTimeout(gerarResumoIA, 300); } } else if (id === 'calendario') { CAL_SELECTED = CAL_SELECTED || new Date(); renderCalendar(); showSidebarDay(CAL_SELECTED); } else if (id === 'produtos') { if (analyticsLoaded) { var wppP = filterByPeriod(window._wppLeads || []); var igP = filterByPeriod(window._igLeads || []); renderProdPage(wppP.concat(igP)); } } }
+function switchStatTab(tab) { document.querySelectorAll('.stat-tab').forEach(function(t) { t.classList.remove('on'); }); document.querySelectorAll('.stat-section').forEach(function(s) { s.classList.remove('active'); }); var btn = document.querySelector('.stat-tab[onclick*="\'' + tab + '\'"]'); if (btn) btn.classList.add('on'); var sec = document.getElementById('stat-' + tab); if (sec) sec.classList.add('active'); var wpp = filterByPeriod(window._wppAll || []); var ig = filterByPeriod(window._igAll || []); var bloq = filterByPeriod(window._bloqAll || []); if (tab === 'funnel') renderFunnelSection(wpp, ig, bloq); if (tab === 'heatmap') renderHeatmapSection(wpp, ig); }
+async function qry(t, s, x) { x = x || ''; var url = SU + '/rest/v1/' + t + '?select=' + encodeURIComponent(s) + (x ? '&' + x : ''); var r = await fetch(url, { headers: { apikey: SK, Authorization: 'Bearer ' + SK, Accept: 'application/json' } }); if (!r.ok) { var tx = await r.text(); throw new Error(r.status + ': ' + tx.slice(0, 200)); } return r.json(); }
+function showErr(id, m) { var e = document.getElementById('err-' + id); if (e) { e.textContent = '⚠ ' + m; e.style.display = 'block'; } }
+function clrErr(id) { var e = document.getElementById('err-' + id); if (e) e.style.display = 'none'; }
+function showOk(id, m) { var e = document.getElementById('ok-' + id); if (e) { e.textContent = '✓ ' + m; e.style.display = 'block'; setTimeout(function() { e.style.display = 'none'; }, 3000); } }
+async function loadAnalytics() { clrErr('analytics'); var tb = document.getElementById('tb-time'); if (tb) tb.textContent = 'Atualizando...'; try { async function fetchAll(table, select, extra) { var all = [], batchSize = 1000, offset = 0; while (true) { var sep = extra ? '&' : ''; var chunk = await qry(table, select, (extra || '') + (extra ? '&' : '') + 'limit=' + batchSize + '&offset=' + offset); if (!chunk || !chunk.length) break; all = all.concat(chunk); if (chunk.length < batchSize) break; offset += batchSize; } return all; } var r = await Promise.all([ fetchAll('conversas_whatsapp', 'etapa_funil,produto_interesse,atualizado_em', 'order=atualizado_em.desc'), fetchAll('conversas', 'etapa_funil,produto_interesse,atualizado_em,last_response_at', 'order=atualizado_em.desc'), fetchAll('bloqueios_ia', 'telefone,bloqueado_em', 'order=bloqueado_em.desc'), fetchAll('conversas_whatsapp', 'telefone,nome,usuario_id,produto_interesse,etapa_funil,contato,mensagens,atual
