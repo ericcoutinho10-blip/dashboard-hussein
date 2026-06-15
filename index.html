@@ -2015,7 +2015,7 @@ async function sendChatMsg(){
   inp.value = '';
   inp.style.height = 'auto';
   try {
-    await proxyPost('/api/whatsapp/send', {to: _currentChatId, text: text});
+    await proxyPost('/api/whatsapp/send', {number: normPhone(_currentChatId), text: text});
     // Optimistic add
     var scroll = document.getElementById('chat-msgs-scroll');
     if(scroll){
