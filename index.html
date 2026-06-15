@@ -1815,7 +1815,14 @@ function normPhone(id){
 }
 
 function chatDisplayName(c){
-  return c.name || c.pushName || normPhone(c.id || c.remoteJid || '');
+  // pushName comes from lastMessage in Evolution API v2
+  var lm = c.lastMessage || {};
+  var pn = c.pushName || (lm.key && !lm.key.fromMe ? lm.pushName : null) || c.name || '';
+  if(pn && pn !== 'Você') return pn;
+  // Fallback: check if group
+  var jid = c.remoteJid || c.id || '';
+  if(jid.includes('@g.us') || jid.includes('@lid')) return c.name || 'Grupo';
+  return normPhone(jid) || 'Desconhecido';
 }
 
 function lastMsgText(c){
@@ -1829,9 +1836,15 @@ function lastMsgText(c){
     || lm.body || lm.text || '';
 }
 
+function parseTs(ts){
+  if(!ts) return null;
+  if(typeof ts === 'string') return new Date(ts);
+  return new Date(ts > 9999999999 ? ts : ts*1000);
+}
+
 function fmtMsgTime(ts){
-  if(!ts) return '';
-  var d = new Date(ts > 9999999999 ? ts : ts*1000);
+  var d = parseTs(ts);
+  if(!d || isNaN(d.getTime())) return '';
   var now = new Date();
   if(d.toDateString() === now.toDateString()) return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   var yd = new Date(now); yd.setDate(yd.getDate()-1);
@@ -1840,8 +1853,8 @@ function fmtMsgTime(ts){
 }
 
 function fmtDayLabel(ts){
-  if(!ts) return '';
-  var d = new Date(ts > 9999999999 ? ts : ts*1000);
+  var d = parseTs(ts);
+  if(!d || isNaN(d.getTime())) return '';
   var now = new Date();
   if(d.toDateString() === now.toDateString()) return 'Hoje';
   var yd = new Date(now); yd.setDate(yd.getDate()-1);
@@ -1851,9 +1864,11 @@ function fmtDayLabel(ts){
 
 function filterChatList(){
   var q = (document.getElementById('chat-search')||{}).value || '';
+  q = q.toLowerCase();
   var filtered = _allChats.filter(function(c){
     var n = chatDisplayName(c).toLowerCase();
-    return n.includes(q.toLowerCase()) || normPhone(c.id||c.remoteJid||'').includes(q);
+    var phone = normPhone(c.remoteJid || c.id || '');
+    return n.includes(q) || phone.includes(q);
   });
   renderChatList(filtered, true);
 }
@@ -1865,32 +1880,39 @@ function renderChatList(chats, silent){
     scroll.innerHTML = '<div class="chat-list-empty">Nenhuma conversa encontrada.</div>';
     return;
   }
-  // Sort by timestamp desc
+  // Sort by updatedAt desc (ISO strings sort correctly as strings)
   var sorted = chats.slice().sort(function(a,b){
-    var ta = a.updatedAt || a.timestamp || (a.lastMessage && (a.lastMessage.messageTimestamp||a.lastMessage.timestamp)) || 0;
-    var tb = b.updatedAt || b.timestamp || (b.lastMessage && (b.lastMessage.messageTimestamp||b.lastMessage.timestamp)) || 0;
-    return tb - ta;
+    var ta = a.updatedAt || '';
+    var tb = b.updatedAt || '';
+    if(ta > tb) return -1;
+    if(ta < tb) return 1;
+    return 0;
   });
   var html = sorted.map(function(c){
-    var id = c.id || c.remoteJid || '';
+    var jid = c.remoteJid || c.id || '';
     var name = chatDisplayName(c);
+    var phone = normPhone(jid);
     var initials = name.slice(0,2).toUpperCase();
     var unread = c.unreadCount || 0;
     var preview = lastMsgText(c);
-    var ts = c.updatedAt || c.timestamp || (c.lastMessage && (c.lastMessage.messageTimestamp||c.lastMessage.timestamp)) || 0;
+    var ts = c.updatedAt || (c.lastMessage && c.lastMessage.messageTimestamp) || '';
     var timeStr = fmtMsgTime(ts);
-    var isActive = id === _currentChatId ? ' active' : '';
-    return `<div class="chat-item${isActive}" onclick="openChat('${id.replace(/'/g,"\\'")}','${name.replace(/'/g,"\\'")}')">
-      <div class="chat-av">${initials}</div>
-      <div class="chat-item-body">
-        <div class="chat-item-top">
-          <div class="chat-item-name">${escHtml(name)}</div>
-          <div class="chat-item-time">${timeStr}</div>
-        </div>
-        <div class="chat-item-preview">${escHtml(preview)}</div>
-      </div>
-      ${unread > 0 ? `<div class="chat-unread">${unread}</div>` : ''}
-    </div>`;
+    var isActive = jid === _currentChatId ? ' active' : '';
+    var isGroup = jid.includes('@g.us') || jid.includes('@lid');
+    var avCls = isGroup ? 'chat-av blocked' : 'chat-av';
+    var safeName = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var safeJid = jid.replace(/'/g,"\\'");
+    return '<div class="chat-item' + isActive + '" onclick="openChat(\'' + safeJid + '\',\'' + safeName + '\')">' +
+      '<div class="' + avCls + '">' + escHtml(initials) + '</div>' +
+      '<div class="chat-item-body">' +
+        '<div class="chat-item-top">' +
+          '<div class="chat-item-name">' + escHtml(name) + '</div>' +
+          '<div class="chat-item-time">' + timeStr + '</div>' +
+        '</div>' +
+        '<div class="chat-item-preview">' + escHtml(preview) + '</div>' +
+      '</div>' +
+      (unread > 0 ? '<div class="chat-unread">' + unread + '</div>' : '') +
+    '</div>';
   }).join('');
   scroll.innerHTML = html;
 }
@@ -1917,38 +1939,28 @@ async function openChat(chatId, name){
 
 async function loadMessages(chatId, silent){
   try {
-    const response = await proxyGet('/api/whatsapp/messages/' + encodeURIComponent(chatId));
-    // Extrai array de mensagens de forma segura
-    let msgs = [];
-    if (Array.isArray(response)) {
-      msgs = response;
-    } else if (response && Array.isArray(response.data)) {
-      msgs = response.data;
-    } else if (response && Array.isArray(response.messages)) {
-      msgs = response.messages;
-    } else if (response && response.message) {
-      msgs = [response];
-    } else if (typeof response === 'object') {
-      // Tenta pegar qualquer propriedade que seja array
-      for (let key in response) {
-        if (Array.isArray(response[key])) {
-          msgs = response[key];
-          break;
-        }
-      }
+    var data = await proxyGet('/api/whatsapp/messages/' + encodeURIComponent(chatId));
+    // Evolution API v2 returns: { messages: { total, pages, currentPage, records: [...] } }
+    var msgs = [];
+    if(data && data.messages && Array.isArray(data.messages.records)){
+      msgs = data.messages.records;
+    } else if(Array.isArray(data)){
+      msgs = data;
+    } else if(data && Array.isArray(data.messages)){
+      msgs = data.messages;
+    } else if(data && Array.isArray(data.data)){
+      msgs = data.data;
     }
-    
-    // Ordenar por timestamp (número)
-    msgs.sort((a, b) => {
-      let ta = Number(a.messageTimestamp || a.timestamp || 0);
-      let tb = Number(b.messageTimestamp || b.timestamp || 0);
+    // sort asc by messageTimestamp
+    msgs = msgs.slice().sort(function(a,b){
+      var ta = a.messageTimestamp || 0;
+      var tb = b.messageTimestamp || 0;
       return ta - tb;
     });
-    
     renderMessages(msgs, silent);
   } catch(e){
     if(!silent){
-      const s = document.getElementById('chat-msgs-scroll');
+      var s = document.getElementById('chat-msgs-scroll');
       if(s) s.innerHTML = '<div class="chat-list-empty">Erro ao carregar mensagens: ' + e.message + '</div>';
     }
   }
@@ -1979,12 +1991,13 @@ function renderMessages(msgs, silent){
     var text = getMsgText(m);
     if(!text) return '';
     var ts = m.messageTimestamp || m.timestamp || 0;
-    var timeStr = ts ? new Date(ts > 9999999999 ? ts : ts*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
-    var day = ts ? fmtDayLabel(ts) : '';
+    var d = parseTs(ts);
+    var timeStr = (d && !isNaN(d.getTime())) ? d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
+    var day = (d && !isNaN(d.getTime())) ? fmtDayLabel(ts) : '';
     var dayLabel = '';
-    if(day && day !== prevDay){ prevDay = day; dayLabel = `<div class="msg-day-label">${day}</div>`; }
+    if(day && day !== prevDay){ prevDay = day; dayLabel = '<div class="msg-day-label">' + day + '</div>'; }
     var tick = fromMe ? '<span class="msg-status-icon">✓</span>' : '';
-    return `${dayLabel}<div class="msg-bubble ${cls}"><span>${escHtml(text)}</span><div class="msg-meta">${timeStr}${tick}</div></div>`;
+    return dayLabel + '<div class="msg-bubble ' + cls + '"><span>' + escHtml(text) + '</span><div class="msg-meta">' + timeStr + tick + '</div></div>';
   }).join('');
   scroll.innerHTML = html;
   scroll.scrollTop = scroll.scrollHeight;
