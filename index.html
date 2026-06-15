@@ -1917,18 +1917,38 @@ async function openChat(chatId, name){
 
 async function loadMessages(chatId, silent){
   try {
-    var data = await proxyGet('/api/whatsapp/messages/' + encodeURIComponent(chatId));
-    var msgs = Array.isArray(data) ? data : (data.messages || data.data || []);
-    // sort asc
-    msgs = msgs.slice().sort(function(a,b){
-      var ta = a.messageTimestamp || a.timestamp || 0;
-      var tb = b.messageTimestamp || b.timestamp || 0;
+    const response = await proxyGet('/api/whatsapp/messages/' + encodeURIComponent(chatId));
+    // Extrai array de mensagens de forma segura
+    let msgs = [];
+    if (Array.isArray(response)) {
+      msgs = response;
+    } else if (response && Array.isArray(response.data)) {
+      msgs = response.data;
+    } else if (response && Array.isArray(response.messages)) {
+      msgs = response.messages;
+    } else if (response && response.message) {
+      msgs = [response];
+    } else if (typeof response === 'object') {
+      // Tenta pegar qualquer propriedade que seja array
+      for (let key in response) {
+        if (Array.isArray(response[key])) {
+          msgs = response[key];
+          break;
+        }
+      }
+    }
+    
+    // Ordenar por timestamp (número)
+    msgs.sort((a, b) => {
+      let ta = Number(a.messageTimestamp || a.timestamp || 0);
+      let tb = Number(b.messageTimestamp || b.timestamp || 0);
       return ta - tb;
     });
+    
     renderMessages(msgs, silent);
   } catch(e){
     if(!silent){
-      var s = document.getElementById('chat-msgs-scroll');
+      const s = document.getElementById('chat-msgs-scroll');
       if(s) s.innerHTML = '<div class="chat-list-empty">Erro ao carregar mensagens: ' + e.message + '</div>';
     }
   }
