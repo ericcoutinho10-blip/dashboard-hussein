@@ -1706,7 +1706,7 @@ function getChatToken(){ return localStorage.getItem('proxy_dash_token') || ''; 
 
 async function proxyGet(path){
   var tok = getChatToken();
-  var r = await fetch(PROXY + path, {headers:{'Authorization':'Bearer ' + tok}});
+  var r = await fetch(PROXY + path, {headers:{'x-dash-token': tok}});
   if(!r.ok) throw new Error(r.status);
   return r.json();
 }
@@ -1714,7 +1714,7 @@ async function proxyPost(path, body){
   var tok = getChatToken();
   var r = await fetch(PROXY + path, {
     method:'POST',
-    headers:{'Authorization':'Bearer ' + tok, 'Content-Type':'application/json'},
+    headers:{'x-dash-token': tok, 'Content-Type':'application/json'},
     body: JSON.stringify(body)
   });
   if(!r.ok){ var t=await r.text(); throw new Error(r.status+' '+t.slice(0,120)); }
@@ -1783,7 +1783,7 @@ async function checkChatConn(){
   var dot = document.getElementById('chat-status-dot');
   var txt = document.getElementById('chat-status-txt');
   try {
-    var d = await proxyGet('/status');
+    var d = await proxyGet('/api/whatsapp/status');
     var state = (d && (d.state || (d.instance && d.instance.state))) || 'unknown';
     _chatConn = (state === 'open');
     if(dot){ dot.className = 'chat-status-dot ' + (_chatConn?'on':'off'); }
@@ -1798,7 +1798,7 @@ async function checkChatConn(){
 /* Load chat list */
 async function loadChatList(silent){
   try {
-    var data = await proxyGet('/chats');
+    var data = await proxyGet('/api/whatsapp/chats');
     if(!Array.isArray(data)) data = data.chats || data.data || [];
     _allChats = data;
     renderChatList(_allChats, silent);
@@ -1917,7 +1917,7 @@ async function openChat(chatId, name){
 
 async function loadMessages(chatId, silent){
   try {
-    var data = await proxyGet('/messages/' + encodeURIComponent(chatId));
+    var data = await proxyGet('/api/whatsapp/messages/' + encodeURIComponent(chatId));
     var msgs = Array.isArray(data) ? data : (data.messages || data.data || []);
     // sort asc
     msgs = msgs.slice().sort(function(a,b){
@@ -1982,7 +1982,7 @@ async function sendChatMsg(){
   inp.value = '';
   inp.style.height = 'auto';
   try {
-    await proxyPost('/send', {to: _currentChatId, text: text});
+    await proxyPost('/api/whatsapp/send', {to: _currentChatId, text: text});
     // Optimistic add
     var scroll = document.getElementById('chat-msgs-scroll');
     if(scroll){
